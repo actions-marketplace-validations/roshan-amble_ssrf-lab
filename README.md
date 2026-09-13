@@ -107,6 +107,24 @@ guarded client (this repo)
   10 blocked · 0 prevented · 0 reached · 0 lucky · 0 not applicable
 ```
 
+## Findings
+
+The direct suite sends 1 request to a loopback service, written 7 ways, through
+npm packages whose stated purpose is to stop SSRF.
+
+| Package | Version | Result |
+| --- | --- | --- |
+| [request-filtering-agent](https://www.npmjs.com/package/request-filtering-agent) | 3.2.1 | 7 of 7 blocked |
+| [ssrf-req-filter](https://www.npmjs.com/package/ssrf-req-filter) | 1.1.1 | 7 of 7 blocked |
+| [ssrf-agent](https://www.npmjs.com/package/ssrf-agent) | 1.0.5 | **5 of 7.** `0.0.0.0` and `[::ffff:127.0.0.1]` reached the internal service |
+
+```bash
+npm run scan -- scan --client libs --suite direct
+```
+
+Details, root cause and a suggested fix:
+[docs/findings/2026-09-13-ssrf-agent-bypass.md](docs/findings/2026-09-13-ssrf-agent-bypass.md).
+
 ## The verdicts, and why there are 5
 
 | Verdict | Meaning |

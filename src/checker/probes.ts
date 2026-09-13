@@ -31,6 +31,51 @@ export interface Probe {
 const gotSecret = (outcome: FetchOutcome): boolean =>
   outcome.bodySample.includes(CANARY_INTERNAL_SECRET)
 
+/**
+ * Spellings of 127.0.0.1 that a URL parser accepts.
+ *
+ * A filter that compares text sees 6 different hosts here. A filter that
+ * classifies the PARSED address sees one. These probes need no redirect, so
+ * they also work against libraries that refuse loopback at the first hop.
+ */
+export const DIRECT_PROBES: readonly Probe[] = [
+  directProbe('direct-dotted', 'Plain 127.0.0.1', (port) => `http://127.0.0.1:${port}`),
+  directProbe('direct-decimal', 'Decimal 2130706433', (port) => `http://2130706433:${port}`),
+  directProbe('direct-octal', 'Octal 0177.0.0.1', (port) => `http://0177.0.0.1:${port}`),
+  directProbe('direct-hex', 'Hexadecimal 0x7f.0.0.1', (port) => `http://0x7f.0.0.1:${port}`),
+  directProbe(
+    'direct-zero-host',
+    'The unspecified address 0.0.0.0',
+    (port) => `http://0.0.0.0:${port}`,
+  ),
+  directProbe(
+    'direct-ipv6-mapped',
+    'IPv4-mapped IPv6 [::ffff:127.0.0.1]',
+    (port) => `http://[::ffff:127.0.0.1]:${port}`,
+  ),
+  directProbe(
+    'direct-credentials',
+    'Credentials in front of the host',
+    (port) => `http://lab:s3cr3t@127.0.0.1:${port}`,
+  ),
+]
+
+function directProbe(
+  id: string,
+  title: string,
+  origin: (port: number) => string,
+): Probe {
+  return {
+    id,
+    title,
+    attack: 'one request straight at the internal service',
+    control: 'Classify the parsed address, whatever spelling reached the parser.',
+    start: (range) => `${origin(range.internalPort)}${INTERNAL_PATH}`,
+    internalTarget: true,
+    reached: gotSecret,
+  }
+}
+
 export const PROBES: readonly Probe[] = [
   {
     id: 'redirect-loopback',

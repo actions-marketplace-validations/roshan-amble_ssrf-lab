@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { checkThenConnect } from './adapters/checkThenConnect.js'
 import { guardedFetch } from './adapters/guardedFetch.js'
+import { requestFilteringAgent, ssrfAgentClient, ssrfReqFilter } from './adapters/libraries.js'
 import { plainFetch } from './adapters/plainFetch.js'
 import type { HttpClient } from './adapters/types.js'
+import { DIRECT_PROBES, PROBES, type Probe } from './checker/probes.js'
 import { LEGEND, renderJson, renderTable } from './checker/report.js'
 import { runScan, type ScanResult } from './checker/run.js'
 import { startAttackRange } from './range/server.js'
@@ -11,13 +13,33 @@ const CLIENTS: Record<string, HttpClient> = {
   plain: plainFetch,
   naive: checkThenConnect,
   guarded: guardedFetch,
+  rfa: requestFilteringAgent,
+  'ssrf-req-filter': ssrfReqFilter,
+  'ssrf-agent': ssrfAgentClient,
+}
+
+const GROUPS: Record<string, readonly string[]> = {
+  all: ['plain', 'naive', 'guarded'],
+  libs: ['rfa', 'ssrf-req-filter', 'ssrf-agent'],
+}
+
+const SUITES: Record<string, readonly Probe[]> = {
+  redirect: PROBES,
+  direct: DIRECT_PROBES,
+  all: [...PROBES, ...DIRECT_PROBES],
 }
 
 const USAGE = `ssrf-lab — run a local attack range against an HTTP client
 
-  ssrf-lab scan [--client plain|naive|guarded|all] [--json] [--fail-on-reach]
+  ssrf-lab scan [--client <name|all|libs>] [--suite redirect|direct|all]
+                [--json] [--fail-on-reach]
 
-  --client         which client to scan (default: all)
+  --client         all (the 3 built-in clients), libs (the npm SSRF packages),
+                   or one of: ${Object.keys(CLIENTS).join(', ')}
+  --suite          redirect: attacks that start on the public range (default)
+                   direct:   one request at the internal service, in every
+                             spelling a URL parser accepts
+                   all:      both
   --json           print machine-readable results
   --fail-on-reach  exit 1 when any probe reports REACHED
 `
@@ -32,9 +54,18 @@ async function main(): Promise<void> {
   const json = argv.includes('--json')
   const failOnReach = argv.includes('--fail-on-reach')
   const which = flagValue(argv, '--client') ?? 'all'
-  const selected = which === 'all' ? Object.values(CLIENTS) : [CLIENTS[which]]
+  const suiteName = flagValue(argv, '--suite') ?? 'redirect'
+  const suite = SUITES[suiteName]
+  const names = GROUPS[which] ?? [which]
+  const selected = names.map((name) => CLIENTS[name])
 
-  if (selected[0] === undefined) {
+  if (suite === undefined) {
+    process.stderr.write(`unknown suite: ${suiteName}\n${USAGE}`)
+    process.exitCode = 2
+    return
+  }
+
+  if (selected.some((client) => client === undefined)) {
     process.stderr.write(`unknown client: ${which}\n${USAGE}`)
     process.exitCode = 2
     return
@@ -46,7 +77,7 @@ async function main(): Promise<void> {
   try {
     for (const client of selected) {
       if (client === undefined) continue
-      scans.push(await runScan(client, range))
+      scans.push(await runScan(client, range, suite))
     }
   } finally {
     await range.close()
