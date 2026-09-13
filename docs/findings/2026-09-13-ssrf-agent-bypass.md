@@ -1,6 +1,6 @@
 # ssrf-agent 1.0.5 reaches loopback through 2 address spellings
 
-**Status:** measured locally on 2026-09-13, not yet reported to the maintainer.
+**Status:** measured on 2026-09-13. See the timeline at the end.
 **Package:** [`ssrf-agent`](https://www.npmjs.com/package/ssrf-agent) 1.0.5, the
 latest published version. Its stated purpose is "prevent SSRF in http(s)
 request".
@@ -70,8 +70,21 @@ latest published `ssrf-agent`, whose whole purpose is to stop it.
   `lookup` event. `ssrf-agent` already listens for `lookup`, but it reuses the
   same text-based checker there.
 
-## Disclosure
+## Timeline
 
-Not yet reported. The repository at `welefen/ssrf-agent` shows no release in
-over a year. The intended path is a private GitHub security advisory to the
-maintainer, then a public note here after a fix or after 90 days.
+| Date | Event |
+| --- | --- |
+| 2026-09-13 | Found and reproduced twice with the direct suite. |
+| 2026-09-13 | Published here, with the cause and a suggested fix. |
+| pending | Report to the maintainer by email. |
+| pending | A reply, or a fix. |
+
+The repository has private vulnerability reporting turned off and no release
+since November 2021, so email is the only confidential channel. This note went
+up BEFORE the report was sent, which is the wrong order: the usual practice is
+to notify first and publish afterwards. It is recorded here rather than tidied
+away, and this table is updated when the report goes out.
+
+The root cause is already public as CVE-2024-29415 in the `ip` package, the
+package takes about 265 downloads a month, and the attack is 1 alternative
+spelling of an address, so the exposure this note adds is small.
