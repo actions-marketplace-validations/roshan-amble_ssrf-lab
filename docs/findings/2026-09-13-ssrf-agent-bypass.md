@@ -76,14 +76,14 @@ latest published `ssrf-agent`, whose whole purpose is to stop it.
 | --- | --- |
 | 2026-09-13 | Found and reproduced twice with the direct suite. |
 | 2026-09-13 | Published here, with the cause and a suggested fix. |
-| pending | Report to the maintainer by email. |
+| 2026-09-13 | Reported to the maintainer by email. |
 | pending | A reply, or a fix. |
 
 The repository has private vulnerability reporting turned off and no release
-since November 2021, so email is the only confidential channel. This note went
-up BEFORE the report was sent, which is the wrong order: the usual practice is
-to notify first and publish afterwards. It is recorded here rather than tidied
-away, and this table is updated when the report goes out.
+since November 2021, so email was the only confidential channel. This note went
+up a few hours BEFORE the report was sent, which is the wrong order: the usual
+practice is to notify first and publish afterwards. It is recorded here rather
+than tidied away.
 
 The root cause is already public as CVE-2024-29415 in the `ip` package, the
 package takes about 265 downloads a month, and the attack is 1 alternative
