@@ -79,6 +79,7 @@ latest published `ssrf-agent`, whose whole purpose is to stop it.
 | 2026-09-13 | Reported to the maintainer by email. |
 | 2026-10-10 | No reply after 27 days. This note was public from 2026-09-13, so no embargo applies. |
 | 2026-10-10 | Second notice: [welefen/ssrf-agent#4](https://github.com/welefen/ssrf-agent/issues/4). |
+| 2026-10-10 | CVE ID requested from MITRE, the CNA of Last Resort, because no CNA covers this package. |
 | pending | A CVE ID from MITRE, a reply, or a fix. |
 
 The repository has private vulnerability reporting turned off and no release
