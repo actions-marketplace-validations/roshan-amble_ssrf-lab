@@ -77,7 +77,9 @@ latest published `ssrf-agent`, whose whole purpose is to stop it.
 | 2026-09-13 | Found and reproduced twice with the direct suite. |
 | 2026-09-13 | Published here, with the cause and a suggested fix. |
 | 2026-09-13 | Reported to the maintainer by email. |
-| pending | A reply, or a fix. |
+| 2026-10-10 | No reply after 27 days. This note was public from 2026-09-13, so no embargo applies. |
+| 2026-10-10 | Second notice: [welefen/ssrf-agent#4](https://github.com/welefen/ssrf-agent/issues/4). |
+| pending | A CVE ID from MITRE, a reply, or a fix. |
 
 The repository has private vulnerability reporting turned off and no release
 since November 2021, so email was the only confidential channel. This note went
