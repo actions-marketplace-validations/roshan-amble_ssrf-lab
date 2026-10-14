@@ -120,6 +120,12 @@ Ordinary loopback entry tests are marked `N/A` for these adapters.
 See [integration scope and reproduction](docs/INTEGRATIONS.md) for the exact
 configuration, limitations, and per-commit evidence artifacts.
 
+An [optional additional group](integrations/community/README.md) compares
+`ssrf-safe-fetch@0.1.0`, `ssrf-fetch@0.1.0`, and
+`@tak-ps/node-safeurl@1.8.0` with the same independent hit counters. It also
+includes a reproduced redirect-conformance bug and a
+[tested node-safeurl patch](patches/node-safeurl/README.md).
+
 ## Measured output
 
 The transcript below is a **historical run**, retained for explanation, not a

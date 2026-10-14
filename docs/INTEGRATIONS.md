@@ -9,6 +9,9 @@ assessment or a claim that every application request path is protected.
 | Vercel Labs guarded-fetch | 0.1.5 | `guardedFetch` with `createGuardedDispatcher` and `readBodyAsText` | Seven direct cases, five address redirects, redirect cap, three body probes |
 | n8n backend-network | 1.17.3 | `OutboundHttp.requests().request()` | Seven direct cases and five address redirects |
 | n8n backend-network | 1.17.3 | `OutboundHttp.transport({proxy:false}).asCustomFetch()` | Seven direct cases and five address redirects |
+| ssrf-safe-fetch | 0.1.0 | `safeFetch` | Seven direct cases, four address redirects, redirect cap; TEST-NET explicitly outside policy |
+| ssrf-fetch | 0.1.0 | `safeFetch` | Seven direct cases and six redirect cases; all redirects forbidden by design |
+| @tak-ps/node-safeurl | 1.8.0 | `fetch` | Seven direct cases, five address redirects, redirect cap |
 
 The n8n integration also pins `@n8n/config@2.41.2`. These are the component
 versions in the [`n8n@2.43.5` source](https://github.com/n8n-io/n8n/tree/d811f5e87dfc164999f34d75b17017876d41a54a).
@@ -17,6 +20,10 @@ client classes. It does not boot n8n, execute a workflow, or prove that each nod
 uses these APIs. No upstream source is vendored or patched.
 
 ## Configuration
+
+The [additional package group](../integrations/community/README.md) is installed
+separately and has its own scope notes and audit. Its node-safeurl functional
+redirect regression and patch are separate from the unmodified SSRF comparison.
 
 - guarded-fetch uses its own dispatcher and exported body reader, with a shared
   request/body deadline of 5 seconds and a decoded response cap of 1 MiB. The

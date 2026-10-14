@@ -4,6 +4,7 @@ import type { LookupFunction } from 'node:net'
 export type RefusalReason =
   | 'forbidden-address'
   | 'too-many-redirects'
+  | 'redirect-not-allowed'
   | 'body-too-large'
   | 'deadline'
   | 'scheme-not-allowed'

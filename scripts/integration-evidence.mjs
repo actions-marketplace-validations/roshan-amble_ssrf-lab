@@ -9,7 +9,7 @@ export function pinnedVersion(packageJson, expected) {
 }
 
 /** Probe one request at a time and keep both server counters beside the verdict. */
-export async function measureClient(client, range, probes, runScan, { positiveControl = true } = {}) {
+export async function measureClient(client, range, probes, runScan, { positiveControl = true, notApplicable = {} } = {}) {
   let control = null
   if (positiveControl) {
     const before = range.publicHits()
@@ -22,8 +22,9 @@ export async function measureClient(client, range, probes, runScan, { positiveCo
   const results = []
   for (const probe of probes) {
     const before = { internal: range.internalHits(), public: range.publicHits() }
-    const scan = await runScan(client, range, [probe])
-    const result = scan.results[0]
+    const result = Object.hasOwn(notApplicable, probe.id)
+      ? { probeId: probe.id, title: probe.title, verdict: 'NOT-APPLICABLE', note: notApplicable[probe.id], durationMs: 0 }
+      : (await runScan(client, range, [probe])).results[0]
     const measured = {
       ...result,
       internalHits: range.internalHits() - before.internal,
