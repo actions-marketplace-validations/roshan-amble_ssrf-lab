@@ -124,7 +124,9 @@ An [optional additional group](integrations/community/README.md) compares
 `ssrf-safe-fetch@0.1.0`, `ssrf-fetch@0.1.0`, and
 `@tak-ps/node-safeurl@1.8.0` with the same independent hit counters. It also
 includes a reproduced redirect-conformance bug and a
-[tested node-safeurl patch](patches/node-safeurl/README.md).
+[tested node-safeurl patch](patches/node-safeurl/README.md), submitted as
+[upstream PR #4](https://github.com/dfpc-coe/node-safeurl/pull/4) and awaiting
+maintainer review.
 
 ## Measured output
 

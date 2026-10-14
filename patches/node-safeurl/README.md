@@ -47,6 +47,8 @@ node --import tsx --test test/*.ts
 ```
 
 All added regression requests use one explicitly allowed loopback origin.
-The patch is prepared for maintainer review; it has not been submitted or merged
-upstream. The community comparison continues testing the unmodified published
+The patch was submitted on 2026-10-14 as
+[upstream PR #4](https://github.com/dfpc-coe/node-safeurl/pull/4) and is awaiting
+maintainer review. It has not been merged upstream.
+The community comparison continues testing the unmodified published
 package, so the fix cannot improve its recorded baseline results.
