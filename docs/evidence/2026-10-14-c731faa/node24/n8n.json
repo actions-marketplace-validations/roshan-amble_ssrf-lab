@@ -1,0 +1,506 @@
+{
+  "environment": {
+    "node": "v24.21.0",
+    "platform": "linux",
+    "kernel": "6.17.0-1022-azure",
+    "measuredAt": "2026-10-14T19:07:44.594Z"
+  },
+  "application": {
+    "name": "n8n",
+    "version": "2.43.5",
+    "sourceCommit": "d811f5e87dfc164999f34d75b17017876d41a54a"
+  },
+  "packages": {
+    "@n8n/backend-network": "1.17.3",
+    "@n8n/config": "2.41.2"
+  },
+  "lockfileSha256": "546ee207e510bd733e2da5d0a9c564b7b794cf40474e1d7b987a12f2523646b8",
+  "scope": "Published OutboundHttp component APIs, not a running n8n workflow or all nodes",
+  "configuration": {
+    "enabled": true,
+    "allowedHostnames": [],
+    "allowedIpRanges": [],
+    "blockedIpRanges": "upstream defaults",
+    "proxy": false,
+    "directOnly": false
+  },
+  "limitations": [
+    "No injected resolver in this adapter; rebinding is N/A.",
+    "No TLS, proxy, or response-resource-limit coverage.",
+    "n8n workflow nodes may choose different request paths."
+  ],
+  "scans": [
+    {
+      "client": "n8n backend-network 1.17.3 (request, protection on)",
+      "positiveControl": {
+        "status": 200,
+        "publicHits": 1
+      },
+      "results": [
+        {
+          "probeId": "direct-dotted",
+          "title": "Plain 127.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-decimal",
+          "title": "Decimal 2130706433",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-octal",
+          "title": "Octal 0177.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-hex",
+          "title": "Hexadecimal 0x7f.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-zero-host",
+          "title": "The unspecified address 0.0.0.0",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-ipv6-mapped",
+          "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-credentials",
+          "title": "Credentials in front of the host",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "redirect-loopback",
+          "title": "Redirect into loopback",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 4,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-decimal-loopback",
+          "title": "Redirect into loopback, written as a decimal",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 2,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-credentials",
+          "title": "Redirect that carries credentials",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 2,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-link-local",
+          "title": "Redirect into cloud metadata",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 3,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-private",
+          "title": "Redirect into TEST-NET-2 (reserved)",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 2,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "dns-rebind",
+          "title": "DNS rebinding (simulated)",
+          "verdict": "NOT-APPLICABLE",
+          "note": "the client exposes no hook on the address it connects to",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        }
+      ],
+      "blocked": 12,
+      "prevented": 0,
+      "reached": 0,
+      "lucky": 0,
+      "notApplicable": 1
+    },
+    {
+      "client": "n8n backend-network 1.17.3 (fetch, protection on)",
+      "positiveControl": {
+        "status": 200,
+        "publicHits": 1
+      },
+      "results": [
+        {
+          "probeId": "direct-dotted",
+          "title": "Plain 127.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-decimal",
+          "title": "Decimal 2130706433",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-octal",
+          "title": "Octal 0177.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-hex",
+          "title": "Hexadecimal 0x7f.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-zero-host",
+          "title": "The unspecified address 0.0.0.0",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-ipv6-mapped",
+          "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-credentials",
+          "title": "Credentials in front of the host",
+          "verdict": "PREVENTED",
+          "note": "the internal service saw no request; the attempt failed with Request cannot be constructed from a URL that includes credentials: http://***@127.0.0.1:40295/internal/secret",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "redirect-loopback",
+          "title": "Redirect into loopback",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 4,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-decimal-loopback",
+          "title": "Redirect into loopback, written as a decimal",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-credentials",
+          "title": "Redirect that carries credentials",
+          "verdict": "PREVENTED",
+          "note": "the internal service saw no request; the attempt failed with fetch failed",
+          "durationMs": 2,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-link-local",
+          "title": "Redirect into cloud metadata",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-private",
+          "title": "Redirect into TEST-NET-2 (reserved)",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: n8n: SsrfBlockedIpError",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "dns-rebind",
+          "title": "DNS rebinding (simulated)",
+          "verdict": "NOT-APPLICABLE",
+          "note": "the client exposes no hook on the address it connects to",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        }
+      ],
+      "blocked": 10,
+      "prevented": 2,
+      "reached": 0,
+      "lucky": 0,
+      "notApplicable": 1
+    }
+  ],
+  "negativeControls": [
+    {
+      "client": "n8n backend-network 1.17.3 (request, protection off)",
+      "positiveControl": {
+        "status": 200,
+        "publicHits": 1
+      },
+      "results": [
+        {
+          "probeId": "direct-dotted",
+          "title": "Plain 127.0.0.1",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 2,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-decimal",
+          "title": "Decimal 2130706433",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-octal",
+          "title": "Octal 0177.0.0.1",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 2,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-hex",
+          "title": "Hexadecimal 0x7f.0.0.1",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-zero-host",
+          "title": "The unspecified address 0.0.0.0",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 2,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-ipv6-mapped",
+          "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-credentials",
+          "title": "Credentials in front of the host",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "redirect-loopback",
+          "title": "Redirect into loopback",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 2,
+          "internalHits": 1,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-decimal-loopback",
+          "title": "Redirect into loopback, written as a decimal",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 2,
+          "internalHits": 1,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-credentials",
+          "title": "Redirect that carries credentials",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 2,
+          "internalHits": 1,
+          "publicHits": 1
+        }
+      ],
+      "blocked": 0,
+      "prevented": 0,
+      "reached": 10,
+      "lucky": 0,
+      "notApplicable": 0
+    },
+    {
+      "client": "n8n backend-network 1.17.3 (fetch, protection off)",
+      "positiveControl": {
+        "status": 200,
+        "publicHits": 1
+      },
+      "results": [
+        {
+          "probeId": "direct-dotted",
+          "title": "Plain 127.0.0.1",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-decimal",
+          "title": "Decimal 2130706433",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-octal",
+          "title": "Octal 0177.0.0.1",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-hex",
+          "title": "Hexadecimal 0x7f.0.0.1",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-zero-host",
+          "title": "The unspecified address 0.0.0.0",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-ipv6-mapped",
+          "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-credentials",
+          "title": "Credentials in front of the host",
+          "verdict": "PREVENTED",
+          "note": "the internal service saw no request; the attempt failed with Request cannot be constructed from a URL that includes credentials: http://***@127.0.0.1:40295/internal/secret",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "redirect-loopback",
+          "title": "Redirect into loopback",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-decimal-loopback",
+          "title": "Redirect into loopback, written as a decimal",
+          "verdict": "REACHED",
+          "note": "the internal service recorded a request, independent of the returned body",
+          "durationMs": 1,
+          "internalHits": 1,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-credentials",
+          "title": "Redirect that carries credentials",
+          "verdict": "PREVENTED",
+          "note": "the internal service saw no request; the attempt failed with fetch failed",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 1
+        }
+      ],
+      "blocked": 0,
+      "prevented": 2,
+      "reached": 8,
+      "lucky": 0,
+      "notApplicable": 0
+    }
+  ]
+}

@@ -82,6 +82,12 @@ README. Do not remove the isolation check to get a full run.
 
 ## Evidence and dependency review
 
+[The recorded Node 22 and 24 results](evidence/2026-10-14-c731faa/README.md)
+retain the original JSON, controls, environment, and network inventory for
+source head `c731faa`. No protected request reached the internal service in
+that run. Unsupported cases and failures without a named policy are retained
+as distinct verdicts.
+
 The [CI workflow](../.github/workflows/ci.yml) runs both integrations on Node 22
 and 24. Artifacts named `integration-verification-node<version>-<commit>` contain
 the measured JSON, environment, network inventory, installed versions, and n8n

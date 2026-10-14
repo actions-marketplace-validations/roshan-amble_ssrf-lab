@@ -1,0 +1,297 @@
+{
+  "environment": {
+    "node": "v24.21.0",
+    "platform": "linux",
+    "kernel": "6.17.0-1022-azure",
+    "measuredAt": "2026-10-14T19:07:43.943Z"
+  },
+  "package": {
+    "name": "guarded-fetch",
+    "version": "0.1.5"
+  },
+  "lockfileSha256": "2d1dace3d33ba04c1cf4a0c4e4832ba891691540168611d9e5653a4cd609bc20",
+  "configuration": {
+    "api": "guardedFetch + readBodyAsText",
+    "timeoutMs": 5000,
+    "slowDripTimeoutMs": 4000,
+    "maxResponseBytes": 1048576
+  },
+  "limitations": [
+    "No injectable base DNS resolver; simulated rebinding is N/A.",
+    "Plain HTTP only; no TLS coverage.",
+    "Initial and final URLs are observable, not every intermediate hop."
+  ],
+  "scans": [
+    {
+      "client": "guarded-fetch 0.1.5 (guardedFetch + readBodyAsText)",
+      "positiveControl": {
+        "status": 200,
+        "publicHits": 1
+      },
+      "results": [
+        {
+          "probeId": "direct-dotted",
+          "title": "Plain 127.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: hostname_unsafe",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-decimal",
+          "title": "Decimal 2130706433",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: hostname_unsafe",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-octal",
+          "title": "Octal 0177.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: hostname_unsafe",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-hex",
+          "title": "Hexadecimal 0x7f.0.0.1",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: hostname_unsafe",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-zero-host",
+          "title": "The unspecified address 0.0.0.0",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: hostname_unsafe",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-ipv6-mapped",
+          "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: hostname_unsafe",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "direct-credentials",
+          "title": "Credentials in front of the host",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: hostname_unsafe",
+          "durationMs": 1,
+          "internalHits": 0,
+          "publicHits": 0
+        },
+        {
+          "probeId": "redirect-loopback",
+          "title": "Redirect into loopback",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: redirect_to_unsafe_host",
+          "durationMs": 5,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-decimal-loopback",
+          "title": "Redirect into loopback, written as a decimal",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: redirect_to_unsafe_host",
+          "durationMs": 3,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-credentials",
+          "title": "Redirect that carries credentials",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: redirect_to_unsafe_host",
+          "durationMs": 3,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-link-local",
+          "title": "Redirect into cloud metadata",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: redirect_to_unsafe_host",
+          "durationMs": 5,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-private",
+          "title": "Redirect into TEST-NET-2 (reserved)",
+          "verdict": "BLOCKED",
+          "note": "forbidden-address: guarded-fetch: redirect_to_unsafe_host",
+          "durationMs": 4,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "redirect-loop",
+          "title": "Endless redirect chain",
+          "verdict": "BLOCKED",
+          "note": "too-many-redirects: guarded-fetch: too_many_redirects",
+          "durationMs": 28,
+          "internalHits": 0,
+          "publicHits": 6
+        },
+        {
+          "probeId": "decompression-bomb",
+          "title": "Decompression bomb",
+          "verdict": "BLOCKED",
+          "note": "body-too-large: guarded-fetch: response_too_large",
+          "durationMs": 249,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "endless-body",
+          "title": "Body with no end and no length",
+          "verdict": "BLOCKED",
+          "note": "body-too-large: guarded-fetch: response_too_large",
+          "durationMs": 169,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "slow-drip",
+          "title": "One byte per second",
+          "verdict": "BLOCKED",
+          "note": "deadline: guarded-fetch: timeout",
+          "durationMs": 4002,
+          "internalHits": 0,
+          "publicHits": 1
+        },
+        {
+          "probeId": "dns-rebind",
+          "title": "DNS rebinding (simulated)",
+          "verdict": "NOT-APPLICABLE",
+          "note": "the client exposes no hook on the address it connects to",
+          "durationMs": 0,
+          "internalHits": 0,
+          "publicHits": 0
+        }
+      ],
+      "blocked": 16,
+      "prevented": 0,
+      "reached": 0,
+      "lucky": 0,
+      "notApplicable": 1
+    }
+  ],
+  "negativeControl": {
+    "client": "node-fetch (global, defaults)",
+    "positiveControl": {
+      "status": 200,
+      "publicHits": 1
+    },
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 2,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-decimal",
+        "title": "Decimal 2130706433",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 1,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-octal",
+        "title": "Octal 0177.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 1,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-hex",
+        "title": "Hexadecimal 0x7f.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 0,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-zero-host",
+        "title": "The unspecified address 0.0.0.0",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 2,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-ipv6-mapped",
+        "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 1,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-credentials",
+        "title": "Credentials in front of the host",
+        "verdict": "PREVENTED",
+        "note": "the internal service saw no request; the attempt failed with Request cannot be constructed from a URL that includes credentials: http://lab:s3cr3t@127.0.0.1:36157/internal/secret",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 2,
+        "internalHits": 1,
+        "publicHits": 1
+      },
+      {
+        "probeId": "redirect-decimal-loopback",
+        "title": "Redirect into loopback, written as a decimal",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 1,
+        "internalHits": 1,
+        "publicHits": 1
+      },
+      {
+        "probeId": "redirect-credentials",
+        "title": "Redirect that carries credentials",
+        "verdict": "PREVENTED",
+        "note": "the internal service saw no request; the attempt failed with fetch failed <- cross origin not allowed for request mode \"cors\"",
+        "durationMs": 1,
+        "internalHits": 0,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 0,
+    "prevented": 2,
+    "reached": 8,
+    "lucky": 0,
+    "notApplicable": 0
+  }
+}
