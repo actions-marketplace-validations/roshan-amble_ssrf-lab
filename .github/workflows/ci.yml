@@ -99,3 +99,71 @@ jobs:
           path: verification/
           if-no-files-found: error
           retention-days: 14
+
+  integrations:
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            integrations/n8n/package-lock.json
+      - name: Install pinned comparison packages without lifecycle scripts
+        run: |
+          npm ci --ignore-scripts
+          npm ci --ignore-scripts --prefix integrations/n8n
+          npm run build
+          mkdir -p verification
+          { git rev-parse HEAD; node --version; npm --version; uname -srm; } | tee verification/environment.txt
+          npm ls --depth=0 > verification/versions.txt
+          npm ls --depth=0 --prefix integrations/n8n > verification/n8n-versions.txt
+      - name: Audit the separate n8n integration dependencies
+        run: |
+          node --test integrations/n8n/check-audit.test.mjs
+          set +e
+          npm audit --prefix integrations/n8n --json > verification/n8n-audit.json
+          status=$?
+          set -e
+          if [ "$status" -gt 1 ]; then cat verification/n8n-audit.json; exit "$status"; fi
+          node integrations/n8n/check-audit.mjs verification/n8n-audit.json | tee verification/n8n-audit-gate.txt
+      - name: Verify real requests with only loopback and an isolated entry address
+        run: |
+          sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
+            ip link set lo up
+            ip address add 93.184.216.34/32 dev lo
+            ip -j address show > verification/network.json
+            ip -j route show table all > verification/routes.json
+            node scripts/verify-vercel.mjs > verification/vercel.json
+            node integrations/n8n/verify.mjs > verification/n8n.json
+          '
+      - name: Print measured comparison tables
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { renderTable } from './dist/index.js';
+          for (const name of ['vercel', 'n8n']) {
+            const report = JSON.parse(readFileSync(`verification/${name}.json`, 'utf8'));
+            for (const scan of report.scans) console.log(renderTable(scan));
+          }
+          NODE
+      - name: Preserve comparison evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-verification-node${{ matrix.node }}-${{ github.sha }}
+          path: verification/
+          if-no-files-found: error
+          retention-days: 14

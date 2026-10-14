@@ -71,6 +71,12 @@ async function runProbe(client: HttpClient, range: AttackRange, probe: Probe): P
     return finish('NOT-APPLICABLE', 'the client exposes no hook on the address it connects to')
   }
 
+  if (client.supportsLoopbackOrigin === false &&
+      new URL(range.origin).hostname === '127.0.0.1' &&
+      new URL(probe.start(range)).origin === range.origin) {
+    return finish('NOT-APPLICABLE', 'requires the isolated public-address entry server; loopback would be refused before the probe')
+  }
+
   try {
     // The range itself lives on loopback. Without this the guards refuse the
     // entry URL and every probe passes while testing nothing.

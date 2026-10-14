@@ -97,6 +97,29 @@ contacting real metadata services or other networks. See
 [workflow](.github/workflows/ci.yml) for the exact commands and saved logs.
 The clone-based instructions do not assume this package is published on npm.
 
+## Additional pinned integrations
+
+The harness also exercises Vercel Labs' `guarded-fetch@0.1.5` and the published
+outbound networking component used by `n8n@2.43.5`. The n8n integration covers
+its request and fetch APIs with SSRF protection both enabled and disabled.
+It is a component test, not coverage of every n8n workflow node.
+
+```bash
+# Local direct-address cases for guarded-fetch
+node dist/cli.js scan --client vercel-guarded --suite direct --json
+
+# Optional n8n component integration, installed separately
+npm ci --ignore-scripts --prefix integrations/n8n
+node integrations/n8n/verify.mjs --direct-only
+```
+
+Their redirect tests require an entry address that the clients actually accept.
+CI assigns that address to loopback inside an isolated network namespace,
+verifies successful entry requests, and records both servers' hit counters.
+Ordinary loopback entry tests are marked `N/A` for these adapters.
+See [integration scope and reproduction](docs/INTEGRATIONS.md) for the exact
+configuration, limitations, and per-commit evidence artifacts.
+
 ## Measured output
 
 The transcript below is a **historical run**, retained for explanation, not a
@@ -195,7 +218,7 @@ covers `ssrf-agent` versions **before** 1.0.5; the local results above test 1.0.
 | `PREVENTED` | No internal request was observed during the probe, but no control was named. Measured with the internal service's hit counter, not inferred solely from an error. |
 | `REACHED` | An internal request was observed, the response proved reach, or a fetch-safety limit was exceeded. A later refusal does not erase a measured hit. |
 | `LUCKY` | No refusing control or observed successful prevention was established. A network failure alone is not evidence of a security boundary. |
-| `N/A` | This adapter exposes no hook the probe needs. It does not establish whether the underlying client has its own equivalent protection. |
+| `N/A` | The adapter lacks a required hook or the selected entry fixture cannot exercise the probe. It does not establish whether the underlying client has its own equivalent protection. |
 
 `LUCKY` is the reason this tool exists. A metadata redirect that fails on a
 network without a reachable metadata endpoint is not evidence that the client

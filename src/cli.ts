@@ -3,6 +3,7 @@ import { checkThenConnect } from './adapters/checkThenConnect.js'
 import { guardedFetch } from './adapters/guardedFetch.js'
 import { requestFilteringAgent, ssrfAgentClient, ssrfReqFilter } from './adapters/libraries.js'
 import { plainFetch } from './adapters/plainFetch.js'
+import { vercelGuardedFetch } from './adapters/vercelGuardedFetch.js'
 import type { HttpClient } from './adapters/types.js'
 import { DIRECT_PROBES, PROBES, type Probe } from './checker/probes.js'
 import { LEGEND, renderJson, renderTable } from './checker/report.js'
@@ -16,6 +17,7 @@ const CLIENTS: Record<string, HttpClient> = {
   rfa: requestFilteringAgent,
   'ssrf-req-filter': ssrfReqFilter,
   'ssrf-agent': ssrfAgentClient,
+  'vercel-guarded': vercelGuardedFetch,
 }
 
 const GROUPS: Record<string, readonly string[]> = {
@@ -32,7 +34,7 @@ const SUITES: Record<string, readonly Probe[]> = {
 const USAGE = `ssrf-lab — run a local attack range against an HTTP client
 
   ssrf-lab scan [--client <name|all|libs>] [--suite redirect|direct|all]
-                [--json] [--fail-on-reach]
+                [--json] [--fail-on-reach] [--public-address]
 
   --client         all (the 3 built-in clients), libs (the npm SSRF packages),
                    or one of: ${Object.keys(CLIENTS).join(', ')}
@@ -42,6 +44,8 @@ const USAGE = `ssrf-lab — run a local attack range against an HTTP client
                    all:      both
   --json           print machine-readable results
   --fail-on-reach  exit 1 when any probe reports REACHED
+  --public-address use the isolated entry fixture; requires only lo with
+                   93.184.216.34/32 and no external routes (Linux only)
 `
 
 async function main(): Promise<void> {
@@ -71,7 +75,7 @@ async function main(): Promise<void> {
     return
   }
 
-  const range = await startAttackRange()
+  const range = await startAttackRange({ publicAddress: argv.includes('--public-address') })
   const scans: ScanResult[] = []
 
   try {

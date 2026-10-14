@@ -1,0 +1,97 @@
+# Pinned client integrations
+
+These integrations measure specific published packages and configurations.
+A successful run is evidence for the listed probes, not a general security
+assessment or a claim that every application request path is protected.
+
+| Target | Exact version | API exercised | Scope |
+| --- | --- | --- | --- |
+| Vercel Labs guarded-fetch | 0.1.5 | `guardedFetch` with `createGuardedDispatcher` and `readBodyAsText` | Seven direct cases, five address redirects, redirect cap, three body probes |
+| n8n backend-network | 1.17.3 | `OutboundHttp.requests().request()` | Seven direct cases and five address redirects |
+| n8n backend-network | 1.17.3 | `OutboundHttp.transport({proxy:false}).asCustomFetch()` | Seven direct cases and five address redirects |
+
+The n8n integration also pins `@n8n/config@2.41.2`. These are the component
+versions in the [`n8n@2.43.5` source](https://github.com/n8n-io/n8n/tree/d811f5e87dfc164999f34d75b17017876d41a54a).
+It instantiates the published production policy, resolver, cache, and outbound
+client classes. It does not boot n8n, execute a workflow, or prove that each node
+uses these APIs. No upstream source is vendored or patched.
+
+## Configuration
+
+- guarded-fetch uses its own dispatcher and exported body reader, with a shared
+  request/body deadline of 5 seconds and a decoded response cap of 1 MiB. The
+  slow-body probe selects 4 seconds. These are configured limits, not upstream
+  defaults. This does not claim that `guardedFetch` alone limits body consumption.
+- n8n uses upstream default blocked IP ranges, empty allowlists, protection on,
+  and proxies off. Each API is also measured with protection off as a negative
+  control. Its 5-second adapter timeout is a harness limit and is never mapped
+  to an n8n policy refusal. The logger alone is a small local substitute.
+- Only typed errors from the actual target policy are translated to
+  `PolicyRefusal`. Parser failures remain `PREVENTED` or `LUCKY`, as appropriate.
+  Internal server hits take precedence over later errors.
+- Neither adapter injects a base DNS resolver, so simulated rebinding is `N/A`.
+  These runs cover plain HTTP, not TLS or proxy behavior. n8n body resource
+  limits are outside this integration's scope.
+- Opaque clients do not expose a complete intermediate URL trace. Counters are
+  the evidence of actual entry and internal requests.
+
+## Why the isolated entry address matters
+
+Both packages refuse a loopback entry URL. Crediting that refusal as a passing
+redirect or response-body test would test the wrong thing. Without the special
+fixture, the harness marks those cases `N/A` for these adapters.
+
+For a full run, CI creates a fresh Linux network namespace with only `lo`, then
+assigns `93.184.216.34/32` to `lo`. The address is used solely as a local fixture:
+there is no external interface, default route, or gateway. The fixture refuses
+to start unless those conditions are verified for IPv4 and IPv6. Never assign
+this address or run this mode on a normal connected host interface.
+
+Every protected client must first receive the expected successful entry
+response. Every redirect and body probe must reach the entry server. The JSON
+records per-probe entry and internal hit counts. Unprotected controls must
+reach the internal service through both a direct URL and a redirect; a control
+is not required to accept malformed or credential-bearing URLs.
+
+## Reproduce
+
+Install and build before entering the namespace:
+
+```bash
+npm ci --ignore-scripts
+npm ci --ignore-scripts --prefix integrations/n8n
+npm run build
+mkdir -p verification
+```
+
+On a disposable Linux runner with permission to create network namespaces:
+
+```bash
+sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
+  ip link set lo up
+  ip address add 93.184.216.34/32 dev lo
+  ip -j address show > verification/network.json
+  ip -j route show table all > verification/routes.json
+  node scripts/verify-vercel.mjs > verification/vercel.json
+  node integrations/n8n/verify.mjs > verification/n8n.json
+'
+```
+
+If namespace creation is unavailable, use the direct-only commands in the
+README. Do not remove the isolation check to get a full run.
+
+## Evidence and dependency review
+
+The [CI workflow](../.github/workflows/ci.yml) runs both integrations on Node 22
+and 24. Artifacts named `integration-verification-node<version>-<commit>` contain
+the measured JSON, environment, network inventory, installed versions, and n8n
+audit report. JSON includes package versions checked against the installation,
+lockfile SHA-256, explicit configuration, positive controls, and negative controls.
+Artifacts are retained for 14 days. Check the workflow conclusion before using
+an artifact as a passing result, since failed jobs also upload evidence.
+
+n8n's dependencies are separate from the main harness installation. The exact
+research fixture contains known dependency advisories, documented in
+[the dependency policy](DEPENDENCY_POLICY.md). A passing audit gate means no
+unreviewed advisory, not zero vulnerabilities. Those pre-existing advisories
+are not discoveries made by this comparison.

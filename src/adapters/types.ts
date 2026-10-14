@@ -30,7 +30,7 @@ export interface FetchOutcome {
   bytesRead: number
   /** First bytes of the body, kept so the checker can look for a canary. */
   bodySample: string
-  /** Every URL the client was willing to follow, in order. */
+  /** Observed URLs in order. Opaque clients may expose only entry and final URLs. */
   hops: string[]
   /** True when the harness stopped the read because the client would not. */
   stoppedByHarness: boolean
@@ -59,9 +59,11 @@ export interface ClientOptions {
 export interface HttpClient {
   readonly name: string
   /**
-   * Whether the client lets a caller see or judge the address it connects to.
-   * A client without this hook cannot close the rebinding window at all.
+   * Whether the adapter can exercise this lab's injected-resolver probe.
+   * False does not mean the underlying client lacks its own DNS protection.
    */
   readonly supportsConnectHook: boolean
+  /** False when the adapter cannot exempt the lab's loopback entry origin. */
+  readonly supportsLoopbackOrigin?: boolean
   fetch(url: string, options?: ClientOptions): Promise<FetchOutcome>
 }
