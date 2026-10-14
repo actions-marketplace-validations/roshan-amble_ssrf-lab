@@ -1,0 +1,5 @@
+# Unified diffs preserve a leading space on empty context lines.
+patches/**/*.patch -whitespace
+# Preserve unedited runner output, including whitespace in failure diagnostics.
+docs/evidence/**/*.tap -whitespace
+docs/evidence/**/*.txt -whitespace

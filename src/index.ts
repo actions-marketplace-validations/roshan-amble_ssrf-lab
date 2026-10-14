@@ -3,6 +3,8 @@ export { checkThenConnect } from './adapters/checkThenConnect.js'
 export { requestFilteringAgent, ssrfAgentClient, ssrfReqFilter } from './adapters/libraries.js'
 export { guardedFetch } from './adapters/guardedFetch.js'
 export { plainFetch } from './adapters/plainFetch.js'
+export { vercelGuardedFetch } from './adapters/vercelGuardedFetch.js'
+export { assertIsolatedNetwork, ISOLATED_PUBLIC_ADDRESS } from './range/isolation.js'
 export {
   PolicyRefusal,
   type ClientOptions,

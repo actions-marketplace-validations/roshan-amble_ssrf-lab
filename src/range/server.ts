@@ -3,6 +3,7 @@ import type { AddressInfo, Socket } from 'node:net'
 import { METADATA_ADDRESS } from '../util/addresses.js'
 import { decompressionBomb } from './bomb.js'
 import { CANARY_ENDLESS_CHUNK, CANARY_INTERNAL_SECRET } from './canaries.js'
+import { assertIsolatedNetwork, ISOLATED_PUBLIC_ADDRESS } from './isolation.js'
 
 /**
  * A running attack range.
@@ -15,9 +16,9 @@ import { CANARY_ENDLESS_CHUNK, CANARY_INTERNAL_SECRET } from './canaries.js'
  *   internal  the service behind the firewall. Nothing outside may read it,
  *             and it answers with a canary so a hit is provable.
  *
- * Both listen on loopback, because that is the only address this process may
- * bind. The public origin is passed to clients as `trustedOrigin`, which is a
- * LAB AFFORDANCE and never a production setting.
+ * Both normally listen on loopback. The optional public-address fixture binds
+ * an address assigned to lo in a verified isolated namespace. `trustedOrigin`
+ * is a LAB AFFORDANCE for the built-in clients, never a production setting.
  */
 export interface AttackRange {
   readonly origin: string
@@ -33,6 +34,8 @@ export interface AttackRange {
    * this counter proves the ABSENCE of one.
    */
   internalHits(): number
+  /** Requests received by the entry server, including successful controls. */
+  publicHits(): number
   close(): Promise<void>
 }
 
@@ -59,26 +62,37 @@ interface Listener {
   sockets: Set<Socket>
 }
 
-export async function startAttackRange(): Promise<AttackRange> {
+export async function startAttackRange(options: { publicAddress?: boolean } = {}): Promise<AttackRange> {
+  if (options.publicAddress) assertIsolatedNetwork()
+  const publicHost = options.publicAddress ? ISOLATED_PUBLIC_ADDRESS : '127.0.0.1'
   const timers = new Set<NodeJS.Timeout>()
   let internalHits = 0
+  let publicHits = 0
 
   const internal = await listen((_request, response) => {
     internalHits += 1
     text(response, 200, CANARY_INTERNAL_SECRET)
   })
 
-  const publicSide = await listen((request, response) => {
-    handle(request, response, `http://127.0.0.1:${internal.port}`, internal.port, timers)
-  })
+  let publicSide: Listener
+  try {
+    publicSide = await listen((request, response) => {
+      publicHits += 1
+      handle(request, response, `http://127.0.0.1:${internal.port}`, internal.port, timers)
+    }, publicHost)
+  } catch (error) {
+    await close(internal)
+    throw error
+  }
 
   return {
-    origin: `http://127.0.0.1:${publicSide.port}`,
+    origin: `http://${publicHost}:${publicSide.port}`,
     port: publicSide.port,
     internalOrigin: `http://127.0.0.1:${internal.port}`,
     internalPort: internal.port,
-    url: (path: string) => `http://127.0.0.1:${publicSide.port}${path}`,
+    url: (path: string) => `http://${publicHost}:${publicSide.port}${path}`,
     internalHits: () => internalHits,
+    publicHits: () => publicHits,
     close: async () => {
       for (const timer of timers) clearInterval(timer)
       timers.clear()
@@ -90,6 +104,7 @@ export async function startAttackRange(): Promise<AttackRange> {
 
 async function listen(
   handler: (request: IncomingMessage, response: ServerResponse) => void,
+  host = '127.0.0.1',
 ): Promise<Listener> {
   const sockets = new Set<Socket>()
   const server = createServer(handler)
@@ -99,7 +114,10 @@ async function listen(
     socket.on('close', () => sockets.delete(socket))
   })
 
-  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', reject)
+    server.listen(0, host, resolve)
+  })
   return { server, port: (server.address() as AddressInfo).port, sockets }
 }
 

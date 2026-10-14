@@ -1,0 +1,1 @@
+n8n research-fixture audit reviewed: 8 known package findings; not a zero-vulnerability audit.

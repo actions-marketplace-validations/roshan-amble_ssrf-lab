@@ -1,0 +1,1227 @@
+TAP version 13
+# Subtest: safeFetch — rejects unsafe URLs by default
+    # Subtest: rejects private IPv4 address
+    ok 1 - rejects private IPv4 address
+      ---
+      duration_ms: 3.284649
+      type: 'test'
+      ...
+    # Subtest: rejects loopback address
+    ok 2 - rejects loopback address
+      ---
+      duration_ms: 0.656648
+      type: 'test'
+      ...
+    # Subtest: rejects URL object pointing to private range
+    ok 3 - rejects URL object pointing to private range
+      ---
+      duration_ms: 3.186906
+      type: 'test'
+      ...
+    1..3
+ok 1 - safeFetch — rejects unsafe URLs by default
+  ---
+  duration_ms: 8.665093
+  type: 'test'
+  ...
+# Subtest: safeFetch — safeUrl: false bypasses SSRF check
+ok 2 - safeFetch — safeUrl: false bypasses SSRF check
+  ---
+  duration_ms: 40.191021
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — rejects private redirect target
+ok 3 - isSafeUrl — rejects private redirect target
+  ---
+  duration_ms: 1.61626
+  type: 'test'
+  ...
+# Subtest: safeFetch — rejects custom dispatcher when safeUrl is enabled
+ok 4 - safeFetch — rejects custom dispatcher when safeUrl is enabled
+  ---
+  duration_ms: 5.176992
+  type: 'test'
+  ...
+# Subtest: safeFetch — allows custom dispatcher when safeUrl is disabled
+ok 5 - safeFetch — allows custom dispatcher when safeUrl is disabled
+  ---
+  duration_ms: 3.784954
+  type: 'test'
+  ...
+# Subtest: safeFetch — aborts a slow request after the timeout
+ok 6 - safeFetch — aborts a slow request after the timeout
+  ---
+  duration_ms: 61.22569
+  type: 'test'
+  ...
+# Error: Internal Validation Error: {"type":41,"schema":{"type":"number"},"path":"/age","value":"not-a-number","message":"Expected number","errors":[]}
+# Error: Internal Validation Error: {"type":27,"schema":{"type":"integer"},"path":"/expires_in","value":"14400","message":"Expected integer","errors":[]}
+# Subtest: safeFetch — timeout: 0 disables the timeout
+ok 7 - safeFetch — timeout: 0 disables the timeout
+  ---
+  duration_ms: 53.939521
+  type: 'test'
+  ...
+# Subtest: safeFetch — caller signal still aborts alongside the timeout
+ok 8 - safeFetch — caller signal still aborts alongside the timeout
+  ---
+  duration_ms: 9.074879
+  type: 'test'
+  ...
+# Subtest: TypedResponse — preserves wrapped response url
+ok 9 - TypedResponse — preserves wrapped response url
+  ---
+  duration_ms: 1.312763
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — valid body matches schema
+ok 10 - TypedResponse.typed() — valid body matches schema
+  ---
+  duration_ms: 10.167992
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — invalid body throws validation error
+ok 11 - TypedResponse.typed() — invalid body throws validation error
+  ---
+  duration_ms: 5.750927
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — reuses compiled schema cache
+ok 12 - TypedResponse.typed() — reuses compiled schema cache
+  ---
+  duration_ms: 5.339048
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — coerces string to integer by default
+ok 13 - TypedResponse.typed() — coerces string to integer by default
+  ---
+  duration_ms: 1.452895
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — coerces string to number by default
+ok 14 - TypedResponse.typed() — coerces string to number by default
+  ---
+  duration_ms: 0.986804
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — coerces number to string by default
+ok 15 - TypedResponse.typed() — coerces number to string by default
+  ---
+  duration_ms: 4.191603
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — coerce: false rejects string where integer expected
+ok 16 - TypedResponse.typed() — coerce: false rejects string where integer expected
+  ---
+  duration_ms: 1.360513
+  type: 'test'
+  ...
+# Subtest: TypedResponse.typed() — coerce: false passes when types already match
+ok 17 - TypedResponse.typed() — coerce: false passes when types already match
+  ---
+  duration_ms: 4.163671
+  type: 'test'
+  ...
+# Subtest: redirects remove body headers only when rewriting the method to GET
+    # Subtest: 301 POST drops body headers and preserves caller headers
+    ok 1 - 301 POST drops body headers and preserves caller headers
+      ---
+      duration_ms: 86.688635
+      type: 'test'
+      ...
+    # Subtest: 302 POST drops body headers and preserves caller headers
+    ok 2 - 302 POST drops body headers and preserves caller headers
+      ---
+      duration_ms: 8.847374
+      type: 'test'
+      ...
+    # Subtest: 303 PUT drops body headers and preserves caller headers
+    ok 3 - 303 PUT drops body headers and preserves caller headers
+      ---
+      duration_ms: 7.55049
+      type: 'test'
+      ...
+    # Subtest: 307 POST preserves the method, body, and body headers
+    ok 4 - 307 POST preserves the method, body, and body headers
+      ---
+      duration_ms: 11.403391
+      type: 'test'
+      ...
+    # Subtest: 308 POST preserves the method, body, and body headers
+    ok 5 - 308 POST preserves the method, body, and body headers
+      ---
+      duration_ms: 19.926518
+      type: 'test'
+      ...
+    # Subtest: 301 PUT preserves the method, body, and body headers
+    ok 6 - 301 PUT preserves the method, body, and body headers
+      ---
+      duration_ms: 9.894791
+      type: 'test'
+      ...
+    # Subtest: 302 PUT preserves the method, body, and body headers
+    ok 7 - 302 PUT preserves the method, body, and body headers
+      ---
+      duration_ms: 8.846341
+      type: 'test'
+      ...
+    1..7
+ok 18 - redirects remove body headers only when rewriting the method to GET
+  ---
+  duration_ms: 168.195946
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — valid public URLs
+    # Subtest: http public URL is safe
+    ok 1 - http public URL is safe
+      ---
+      duration_ms: 29.337095
+      type: 'test'
+      ...
+    # Subtest: https public URL is safe
+    ok 2 - https public URL is safe
+      ---
+      duration_ms: 5.343636
+      type: 'test'
+      ...
+    # Subtest: URL with port is safe
+    ok 3 - URL with port is safe
+      ---
+      duration_ms: 1.901233
+      type: 'test'
+      ...
+    # Subtest: URL with query string and fragment is safe
+    ok 4 - URL with query string and fragment is safe
+      ---
+      duration_ms: 2.556317
+      type: 'test'
+      ...
+    # Subtest: URL with credentials on a safe host is safe
+    ok 5 - URL with credentials on a safe host is safe
+      ---
+      duration_ms: 2.227432
+      type: 'test'
+      ...
+    # Subtest: subdomain of public host is safe
+    ok 6 - subdomain of public host is safe
+      ---
+      duration_ms: 5.012197
+      type: 'test'
+      ...
+    # Subtest: well-known public IPs are safe
+    ok 7 - well-known public IPs are safe
+      ---
+      duration_ms: 1.282367
+      type: 'test'
+      ...
+    1..7
+ok 19 - isSafeUrl — valid public URLs
+  ---
+  duration_ms: 52.115232
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — invalid / unparseable URLs
+    # Subtest: empty string is unsafe
+    ok 1 - empty string is unsafe
+      ---
+      duration_ms: 1.029554
+      type: 'test'
+      ...
+    # Subtest: bare hostname is unsafe
+    ok 2 - bare hostname is unsafe
+      ---
+      duration_ms: 0.259325
+      type: 'test'
+      ...
+    # Subtest: path-only string is unsafe
+    ok 3 - path-only string is unsafe
+      ---
+      duration_ms: 0.162453
+      type: 'test'
+      ...
+    # Subtest: random garbage string is unsafe
+    ok 4 - random garbage string is unsafe
+      ---
+      duration_ms: 0.158807
+      type: 'test'
+      ...
+    1..4
+ok 20 - isSafeUrl — invalid / unparseable URLs
+  ---
+  duration_ms: 2.460668
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — blocked schemes
+    # Subtest: scheme blocked: file://
+    ok 1 - scheme blocked: file://
+      ---
+      duration_ms: 0.226393
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: ftp://
+    ok 2 - scheme blocked: ftp://
+      ---
+      duration_ms: 0.123822
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: ftps://
+    ok 3 - scheme blocked: ftps://
+      ---
+      duration_ms: 0.113191
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: data://
+    ok 4 - scheme blocked: data://
+      ---
+      duration_ms: 0.141535
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: javascript://
+    ok 5 - scheme blocked: javascript://
+      ---
+      duration_ms: 0.110937
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: about://
+    ok 6 - scheme blocked: about://
+      ---
+      duration_ms: 0.188873
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: blob://
+    ok 7 - scheme blocked: blob://
+      ---
+      duration_ms: 0.121857
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: custom://
+    ok 8 - scheme blocked: custom://
+      ---
+      duration_ms: 0.120816
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: ssh://
+    ok 9 - scheme blocked: ssh://
+      ---
+      duration_ms: 0.120084
+      type: 'test'
+      ...
+    # Subtest: scheme blocked: ldap://
+    ok 10 - scheme blocked: ldap://
+      ---
+      duration_ms: 0.114334
+      type: 'test'
+      ...
+    1..10
+ok 21 - isSafeUrl — blocked schemes
+  ---
+  duration_ms: 2.436383
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — blocked hostnames
+    # Subtest: localhost is blocked
+    ok 1 - localhost is blocked
+      ---
+      duration_ms: 0.191247
+      type: 'test'
+      ...
+    # Subtest: LOCALHOST (uppercase) is blocked
+    ok 2 - LOCALHOST (uppercase) is blocked
+      ---
+      duration_ms: 0.199212
+      type: 'test'
+      ...
+    # Subtest: localhost with port is blocked
+    ok 3 - localhost with port is blocked
+      ---
+      duration_ms: 0.150211
+      type: 'test'
+      ...
+    # Subtest: IPv6 loopback ::1 is blocked
+    ok 4 - IPv6 loopback ::1 is blocked
+      ---
+      duration_ms: 0.350906
+      type: 'test'
+      ...
+    # Subtest: IPv6 loopback ::1 with port is blocked
+    ok 5 - IPv6 loopback ::1 with port is blocked
+      ---
+      duration_ms: 0.190756
+      type: 'test'
+      ...
+    # Subtest: 0.0.0.0 is blocked
+    ok 6 - 0.0.0.0 is blocked
+      ---
+      duration_ms: 0.149319
+      type: 'test'
+      ...
+    # Subtest: localhost. (trailing dot) is blocked
+    ok 7 - localhost. (trailing dot) is blocked
+      ---
+      duration_ms: 0.142687
+      type: 'test'
+      ...
+    # Subtest: foo.localhost subdomain is blocked
+    ok 8 - foo.localhost subdomain is blocked
+      ---
+      duration_ms: 0.138409
+      type: 'test'
+      ...
+    # Subtest: foo.localhost. (trailing dot subdomain) is blocked
+    ok 9 - foo.localhost. (trailing dot subdomain) is blocked
+      ---
+      duration_ms: 0.136365
+      type: 'test'
+      ...
+    1..9
+ok 22 - isSafeUrl — blocked hostnames
+  ---
+  duration_ms: 2.47215
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — RFC 1918 / loopback / special ranges blocked
+    # Subtest: 127.0.0.1 is blocked
+    ok 1 - 127.0.0.1 is blocked
+      ---
+      duration_ms: 0.206566
+      type: 'test'
+      ...
+    # Subtest: 127.1.2.3 is blocked
+    ok 2 - 127.1.2.3 is blocked
+      ---
+      duration_ms: 0.110987
+      type: 'test'
+      ...
+    # Subtest: 127.255.255.255 is blocked
+    ok 3 - 127.255.255.255 is blocked
+      ---
+      duration_ms: 0.179215
+      type: 'test'
+      ...
+    # Subtest: 10.0.0.1 is blocked
+    ok 4 - 10.0.0.1 is blocked
+      ---
+      duration_ms: 0.112881
+      type: 'test'
+      ...
+    # Subtest: 10.10.10.10 is blocked
+    ok 5 - 10.10.10.10 is blocked
+      ---
+      duration_ms: 0.120265
+      type: 'test'
+      ...
+    # Subtest: 10.255.255.255 is blocked
+    ok 6 - 10.255.255.255 is blocked
+      ---
+      duration_ms: 0.12305
+      type: 'test'
+      ...
+    # Subtest: 172.16.0.1 is blocked
+    ok 7 - 172.16.0.1 is blocked
+      ---
+      duration_ms: 0.124172
+      type: 'test'
+      ...
+    # Subtest: 172.20.0.1 is blocked
+    ok 8 - 172.20.0.1 is blocked
+      ---
+      duration_ms: 0.117119
+      type: 'test'
+      ...
+    # Subtest: 172.31.255.255 is blocked
+    ok 9 - 172.31.255.255 is blocked
+      ---
+      duration_ms: 0.114514
+      type: 'test'
+      ...
+    # Subtest: 192.168.0.1 is blocked
+    ok 10 - 192.168.0.1 is blocked
+      ---
+      duration_ms: 3.153323
+      type: 'test'
+      ...
+    # Subtest: 192.168.1.2 is blocked
+    ok 11 - 192.168.1.2 is blocked
+      ---
+      duration_ms: 0.128972
+      type: 'test'
+      ...
+    # Subtest: 192.168.255.255 is blocked
+    ok 12 - 192.168.255.255 is blocked
+      ---
+      duration_ms: 0.123491
+      type: 'test'
+      ...
+    # Subtest: 169.254.0.1 is blocked
+    ok 13 - 169.254.0.1 is blocked
+      ---
+      duration_ms: 0.129913
+      type: 'test'
+      ...
+    # Subtest: 169.254.169.254 is blocked
+    ok 14 - 169.254.169.254 is blocked
+      ---
+      duration_ms: 3.448414
+      type: 'test'
+      ...
+    # Subtest: 169.254.255.255 is blocked
+    ok 15 - 169.254.255.255 is blocked
+      ---
+      duration_ms: 0.135313
+      type: 'test'
+      ...
+    # Subtest: 100.64.0.1 is blocked
+    ok 16 - 100.64.0.1 is blocked
+      ---
+      duration_ms: 0.140623
+      type: 'test'
+      ...
+    # Subtest: 100.100.0.1 is blocked
+    ok 17 - 100.100.0.1 is blocked
+      ---
+      duration_ms: 0.139391
+      type: 'test'
+      ...
+    # Subtest: 100.127.255.255 is blocked
+    ok 18 - 100.127.255.255 is blocked
+      ---
+      duration_ms: 0.104815
+      type: 'test'
+      ...
+    1..18
+ok 23 - isSafeUrl — RFC 1918 / loopback / special ranges blocked
+  ---
+  duration_ms: 10.319775
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — IPs just outside private ranges are allowed
+    # Subtest: 11.0.0.1 is NOT in a private range
+    ok 1 - 11.0.0.1 is NOT in a private range
+      ---
+      duration_ms: 0.307014
+      type: 'test'
+      ...
+    # Subtest: 172.15.255.255 is NOT in a private range
+    ok 2 - 172.15.255.255 is NOT in a private range
+      ---
+      duration_ms: 0.180448
+      type: 'test'
+      ...
+    # Subtest: 172.32.0.1 is NOT in a private range
+    ok 3 - 172.32.0.1 is NOT in a private range
+      ---
+      duration_ms: 0.154449
+      type: 'test'
+      ...
+    # Subtest: 100.63.255.255 is NOT in a private range
+    ok 4 - 100.63.255.255 is NOT in a private range
+      ---
+      duration_ms: 0.156974
+      type: 'test'
+      ...
+    # Subtest: 100.128.0.1 is NOT in a private range
+    ok 5 - 100.128.0.1 is NOT in a private range
+      ---
+      duration_ms: 0.152906
+      type: 'test'
+      ...
+    # Subtest: 169.253.255.255 is NOT in a private range
+    ok 6 - 169.253.255.255 is NOT in a private range
+      ---
+      duration_ms: 0.143198
+      type: 'test'
+      ...
+    # Subtest: 169.255.0.1 is NOT in a private range
+    ok 7 - 169.255.0.1 is NOT in a private range
+      ---
+      duration_ms: 3.201924
+      type: 'test'
+      ...
+    1..7
+ok 24 - isSafeUrl — IPs just outside private ranges are allowed
+  ---
+  duration_ms: 4.95502
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — private IPv6 literal addresses blocked
+    # Subtest: fc00::1 is blocked
+    ok 1 - fc00::1 is blocked
+      ---
+      duration_ms: 0.233316
+      type: 'test'
+      ...
+    # Subtest: fd00::1 is blocked
+    ok 2 - fd00::1 is blocked
+      ---
+      duration_ms: 7.887431
+      type: 'test'
+      ...
+    # Subtest: fdff:ffff:… is blocked
+    ok 3 - fdff:ffff:… is blocked
+      ---
+      duration_ms: 0.140443
+      type: 'test'
+      ...
+    # Subtest: fe80::1 is blocked
+    ok 4 - fe80::1 is blocked
+      ---
+      duration_ms: 0.167173
+      type: 'test'
+      ...
+    # Subtest: fe80::1%25eth0 (zone id percent-encoded) is blocked
+    ok 5 - fe80::1%25eth0 (zone id percent-encoded) is blocked
+      ---
+      duration_ms: 0.098684
+      type: 'test'
+      ...
+    # Subtest: febf::1 is blocked
+    ok 6 - febf::1 is blocked
+      ---
+      duration_ms: 0.110126
+      type: 'test'
+      ...
+    # Subtest: ::ffff:10.0.0.1 (IPv4-mapped private) is blocked
+    ok 7 - ::ffff:10.0.0.1 (IPv4-mapped private) is blocked
+      ---
+      duration_ms: 0.195866
+      type: 'test'
+      ...
+    # Subtest: ::ffff:192.168.1.1 (IPv4-mapped RFC1918) is blocked
+    ok 8 - ::ffff:192.168.1.1 (IPv4-mapped RFC1918) is blocked
+      ---
+      duration_ms: 0.132929
+      type: 'test'
+      ...
+    # Subtest: public IPv6 address is safe
+    ok 9 - public IPv6 address is safe
+      ---
+      duration_ms: 6.229682
+      type: 'test'
+      ...
+    1..9
+ok 25 - isSafeUrl — private IPv6 literal addresses blocked
+  ---
+  duration_ms: 15.998968
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv6 — loopback and unspecified
+    # Subtest: ::1 is private
+    ok 1 - ::1 is private
+      ---
+      duration_ms: 0.217817
+      type: 'test'
+      ...
+    # Subtest: :: is private
+    ok 2 - :: is private
+      ---
+      duration_ms: 0.136195
+      type: 'test'
+      ...
+    1..2
+ok 26 - isPrivateIPv6 — loopback and unspecified
+  ---
+  duration_ms: 0.616211
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv6 — ULA fc00::/7
+    # Subtest: fc00::1
+    ok 1 - fc00::1
+      ---
+      duration_ms: 0.154599
+      type: 'test'
+      ...
+    # Subtest: fd00::1
+    ok 2 - fd00::1
+      ---
+      duration_ms: 0.127528
+      type: 'test'
+      ...
+    # Subtest: fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+    ok 3 - fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+      ---
+      duration_ms: 0.151733
+      type: 'test'
+      ...
+    # Subtest: fe00:: is NOT ULA (just above fc00::/7)
+    ok 4 - fe00:: is NOT ULA (just above fc00::/7)
+      ---
+      duration_ms: 0.151042
+      type: 'test'
+      ...
+    1..4
+ok 27 - isPrivateIPv6 — ULA fc00::/7
+  ---
+  duration_ms: 0.961076
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv6 — link-local fe80::/10
+    # Subtest: fe80::1
+    ok 1 - fe80::1
+      ---
+      duration_ms: 0.255838
+      type: 'test'
+      ...
+    # Subtest: fe80::1%eth0 (zone id stripped)
+    ok 2 - fe80::1%eth0 (zone id stripped)
+      ---
+      duration_ms: 0.143367
+      type: 'test'
+      ...
+    # Subtest: febf::1
+    ok 3 - febf::1
+      ---
+      duration_ms: 0.141745
+      type: 'test'
+      ...
+    # Subtest: fec0:: is private (deprecated site-local in @microsoft/antissrf)
+    ok 4 - fec0:: is private (deprecated site-local in @microsoft/antissrf)
+      ---
+      duration_ms: 0.144711
+      type: 'test'
+      ...
+    1..4
+ok 28 - isPrivateIPv6 — link-local fe80::/10
+  ---
+  duration_ms: 4.148553
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv6 — IPv4-mapped ::ffff:0:0/96
+    # Subtest: ::ffff:10.0.0.1 (private v4)
+    ok 1 - ::ffff:10.0.0.1 (private v4)
+      ---
+      duration_ms: 0.16566
+      type: 'test'
+      ...
+    # Subtest: ::ffff:192.168.1.1 (private v4)
+    ok 2 - ::ffff:192.168.1.1 (private v4)
+      ---
+      duration_ms: 0.150271
+      type: 'test'
+      ...
+    # Subtest: ::ffff:8.8.8.8 (public v4)
+    ok 3 - ::ffff:8.8.8.8 (public v4)
+      ---
+      duration_ms: 0.142857
+      type: 'test'
+      ...
+    1..3
+ok 29 - isPrivateIPv6 — IPv4-mapped ::ffff:0:0/96
+  ---
+  duration_ms: 0.764298
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv6 — public addresses
+    # Subtest: 2606:4700:4700::1111 is NOT private (Cloudflare DNS)
+    ok 1 - 2606:4700:4700::1111 is NOT private (Cloudflare DNS)
+      ---
+      duration_ms: 0.193572
+      type: 'test'
+      ...
+    # Subtest: 2001:4860:4860::8888 is NOT private (Google DNS)
+    ok 2 - 2001:4860:4860::8888 is NOT private (Google DNS)
+      ---
+      duration_ms: 2.748486
+      type: 'test'
+      ...
+    # Subtest: 2001:db8::1 is private (documentation prefix in @microsoft/antissrf)
+    ok 3 - 2001:db8::1 is private (documentation prefix in @microsoft/antissrf)
+      ---
+      duration_ms: 0.157054
+      type: 'test'
+      ...
+    1..3
+ok 30 - isPrivateIPv6 — public addresses
+  ---
+  duration_ms: 3.459595
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — NAT64 64:ff9b::/96 blocked
+    # Subtest: 64:ff9b::7f00:1 (NAT64 for 127.0.0.1) is blocked
+    ok 1 - 64:ff9b::7f00:1 (NAT64 for 127.0.0.1) is blocked
+      ---
+      duration_ms: 0.17671
+      type: 'test'
+      ...
+    # Subtest: 64:ff9b::c0a8:101 (NAT64 for 192.168.1.1) is blocked
+    ok 2 - 64:ff9b::c0a8:101 (NAT64 for 192.168.1.1) is blocked
+      ---
+      duration_ms: 0.162063
+      type: 'test'
+      ...
+    1..2
+ok 31 - isSafeUrl — NAT64 64:ff9b::/96 blocked
+  ---
+  duration_ms: 0.573762
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — IPv6 zone ID bypass prevented
+    # Subtest: fe80::1%25eth0 (percent-encoded zone id) is blocked
+    ok 1 - fe80::1%25eth0 (percent-encoded zone id) is blocked
+      ---
+      duration_ms: 0.193291
+      type: 'test'
+      ...
+    1..1
+ok 32 - isSafeUrl — IPv6 zone ID bypass prevented
+  ---
+  duration_ms: 0.426257
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — loopback 127.0.0.0/8
+    # Subtest: 127.0.0.1
+    ok 1 - 127.0.0.1
+      ---
+      duration_ms: 0.242433
+      type: 'test'
+      ...
+    # Subtest: 127.0.0.0
+    ok 2 - 127.0.0.0
+      ---
+      duration_ms: 0.164157
+      type: 'test'
+      ...
+    # Subtest: 127.255.255.255
+    ok 3 - 127.255.255.255
+      ---
+      duration_ms: 0.135523
+      type: 'test'
+      ...
+    # Subtest: 128.0.0.1 is NOT loopback
+    ok 4 - 128.0.0.1 is NOT loopback
+      ---
+      duration_ms: 0.123842
+      type: 'test'
+      ...
+    1..4
+ok 33 - isPrivateIPv4 — loopback 127.0.0.0/8
+  ---
+  duration_ms: 1.055182
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — RFC 1918 10.0.0.0/8
+    # Subtest: 10.0.0.0
+    ok 1 - 10.0.0.0
+      ---
+      duration_ms: 0.14462
+      type: 'test'
+      ...
+    # Subtest: 10.0.0.1
+    ok 2 - 10.0.0.1
+      ---
+      duration_ms: 0.129782
+      type: 'test'
+      ...
+    # Subtest: 10.255.255.255
+    ok 3 - 10.255.255.255
+      ---
+      duration_ms: 0.152195
+      type: 'test'
+      ...
+    # Subtest: 9.255.255.255 is NOT 10/8
+    ok 4 - 9.255.255.255 is NOT 10/8
+      ---
+      duration_ms: 0.14947
+      type: 'test'
+      ...
+    # Subtest: 11.0.0.0 is NOT 10/8
+    ok 5 - 11.0.0.0 is NOT 10/8
+      ---
+      duration_ms: 0.158196
+      type: 'test'
+      ...
+    1..5
+ok 34 - isPrivateIPv4 — RFC 1918 10.0.0.0/8
+  ---
+  duration_ms: 4.279067
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — RFC 1918 172.16.0.0/12
+    # Subtest: 172.16.0.1
+    ok 1 - 172.16.0.1
+      ---
+      duration_ms: 0.196678
+      type: 'test'
+      ...
+    # Subtest: 172.20.0.0
+    ok 2 - 172.20.0.0
+      ---
+      duration_ms: 5.849161
+      type: 'test'
+      ...
+    # Subtest: 172.31.255.255
+    ok 3 - 172.31.255.255
+      ---
+      duration_ms: 0.201286
+      type: 'test'
+      ...
+    # Subtest: 172.15.255.255 is below range
+    ok 4 - 172.15.255.255 is below range
+      ---
+      duration_ms: 0.273721
+      type: 'test'
+      ...
+    # Subtest: 172.32.0.0 is above range
+    ok 5 - 172.32.0.0 is above range
+      ---
+      duration_ms: 0.14996
+      type: 'test'
+      ...
+    # Subtest: 171.16.0.1 wrong first octet
+    ok 6 - 171.16.0.1 wrong first octet
+      ---
+      duration_ms: 0.21957
+      type: 'test'
+      ...
+    1..6
+ok 35 - isPrivateIPv4 — RFC 1918 172.16.0.0/12
+  ---
+  duration_ms: 13.552537
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — RFC 1918 192.168.0.0/16
+    # Subtest: 192.168.0.0
+    ok 1 - 192.168.0.0
+      ---
+      duration_ms: 0.207358
+      type: 'test'
+      ...
+    # Subtest: 192.168.1.1
+    ok 2 - 192.168.1.1
+      ---
+      duration_ms: 0.197539
+      type: 'test'
+      ...
+    # Subtest: 192.168.255.255
+    ok 3 - 192.168.255.255
+      ---
+      duration_ms: 0.156963
+      type: 'test'
+      ...
+    # Subtest: 192.167.255.255 is below range
+    ok 4 - 192.167.255.255 is below range
+      ---
+      duration_ms: 0.164798
+      type: 'test'
+      ...
+    # Subtest: 192.169.0.0 is above range
+    ok 5 - 192.169.0.0 is above range
+      ---
+      duration_ms: 0.145271
+      type: 'test'
+      ...
+    1..5
+ok 36 - isPrivateIPv4 — RFC 1918 192.168.0.0/16
+  ---
+  duration_ms: 1.426826
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — link-local 169.254.0.0/16
+    # Subtest: 169.254.0.1
+    ok 1 - 169.254.0.1
+      ---
+      duration_ms: 0.167363
+      type: 'test'
+      ...
+    # Subtest: 169.254.169.254 (metadata)
+    ok 2 - 169.254.169.254 (metadata)
+      ---
+      duration_ms: 0.137257
+      type: 'test'
+      ...
+    # Subtest: 169.254.255.255
+    ok 3 - 169.254.255.255
+      ---
+      duration_ms: 0.133259
+      type: 'test'
+      ...
+    # Subtest: 169.253.255.255 is below range
+    ok 4 - 169.253.255.255 is below range
+      ---
+      duration_ms: 0.141745
+      type: 'test'
+      ...
+    # Subtest: 169.255.0.0 is above range
+    ok 5 - 169.255.0.0 is above range
+      ---
+      duration_ms: 4.016206
+      type: 'test'
+      ...
+    1..5
+ok 37 - isPrivateIPv4 — link-local 169.254.0.0/16
+  ---
+  duration_ms: 5.148682
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — CGNAT 100.64.0.0/10
+    # Subtest: 100.64.0.0
+    ok 1 - 100.64.0.0
+      ---
+      duration_ms: 0.158206
+      type: 'test'
+      ...
+    # Subtest: 100.64.0.1
+    ok 2 - 100.64.0.1
+      ---
+      duration_ms: 0.119493
+      type: 'test'
+      ...
+    # Subtest: 100.100.0.1
+    ok 3 - 100.100.0.1
+      ---
+      duration_ms: 0.122739
+      type: 'test'
+      ...
+    # Subtest: 100.127.255.255
+    ok 4 - 100.127.255.255
+      ---
+      duration_ms: 0.12848
+      type: 'test'
+      ...
+    # Subtest: 100.63.255.255 is below range
+    ok 5 - 100.63.255.255 is below range
+      ---
+      duration_ms: 0.12835
+      type: 'test'
+      ...
+    # Subtest: 100.128.0.0 is above range
+    ok 6 - 100.128.0.0 is above range
+      ---
+      duration_ms: 0.121126
+      type: 'test'
+      ...
+    1..6
+ok 38 - isPrivateIPv4 — CGNAT 100.64.0.0/10
+  ---
+  duration_ms: 1.360683
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — public IPs
+    # Subtest: 8.8.8.8 is NOT private
+    ok 1 - 8.8.8.8 is NOT private
+      ---
+      duration_ms: 0.147465
+      type: 'test'
+      ...
+    # Subtest: 1.1.1.1 is NOT private
+    ok 2 - 1.1.1.1 is NOT private
+      ---
+      duration_ms: 0.092693
+      type: 'test'
+      ...
+    # Subtest: 93.184.216.34 is NOT private
+    ok 3 - 93.184.216.34 is NOT private
+      ---
+      duration_ms: 3.175415
+      type: 'test'
+      ...
+    # Subtest: 151.101.1.140 is NOT private
+    ok 4 - 151.101.1.140 is NOT private
+      ---
+      duration_ms: 0.122699
+      type: 'test'
+      ...
+    # Subtest: 0.0.0.0 is private (reserved range)
+    ok 5 - 0.0.0.0 is private (reserved range)
+      ---
+      duration_ms: 0.134401
+      type: 'test'
+      ...
+    # Subtest: 255.255.255.255 is private (reserved/multicast range)
+    ok 6 - 255.255.255.255 is private (reserved/multicast range)
+      ---
+      duration_ms: 0.143107
+      type: 'test'
+      ...
+    1..6
+ok 39 - isPrivateIPv4 — public IPs
+  ---
+  duration_ms: 4.404
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — invalid / non-IPv4 inputs
+    # Subtest: "" returns false
+    ok 1 - "" returns false
+      ---
+      duration_ms: 0.155551
+      type: 'test'
+      ...
+    # Subtest: "localhost" returns false
+    ok 2 - "localhost" returns false
+      ---
+      duration_ms: 0.083466
+      type: 'test'
+      ...
+    # Subtest: "::1" returns false
+    ok 3 - "::1" returns false
+      ---
+      duration_ms: 0.077805
+      type: 'test'
+      ...
+    # Subtest: "example.com" returns false
+    ok 4 - "example.com" returns false
+      ---
+      duration_ms: 0.083115
+      type: 'test'
+      ...
+    # Subtest: "256.0.0.1" returns false
+    ok 5 - "256.0.0.1" returns false
+      ---
+      duration_ms: 0.083286
+      type: 'test'
+      ...
+    # Subtest: "-1.0.0.1" returns false
+    ok 6 - "-1.0.0.1" returns false
+      ---
+      duration_ms: 0.08035
+      type: 'test'
+      ...
+    # Subtest: "1.2.3" returns false
+    ok 7 - "1.2.3" returns false
+      ---
+      duration_ms: 0.095819
+      type: 'test'
+      ...
+    # Subtest: "1.2.3.4.5" returns false
+    ok 8 - "1.2.3.4.5" returns false
+      ---
+      duration_ms: 0.088084
+      type: 'test'
+      ...
+    # Subtest: "1.2.3.abc" returns false
+    ok 9 - "1.2.3.abc" returns false
+      ---
+      duration_ms: 0.091321
+      type: 'test'
+      ...
+    # Subtest: "1.2.3." returns false
+    ok 10 - "1.2.3." returns false
+      ---
+      duration_ms: 0.09075
+      type: 'test'
+      ...
+    # Subtest: ".1.2.3" returns false
+    ok 11 - ".1.2.3" returns false
+      ---
+      duration_ms: 0.077705
+      type: 'test'
+      ...
+    # Subtest: "1.2.3.4/24" returns false
+    ok 12 - "1.2.3.4/24" returns false
+      ---
+      duration_ms: 0.077906
+      type: 'test'
+      ...
+    # Subtest: "NaN.0.0.1" returns false
+    ok 13 - "NaN.0.0.1" returns false
+      ---
+      duration_ms: 0.104595
+      type: 'test'
+      ...
+    1..13
+ok 40 - isPrivateIPv4 — invalid / non-IPv4 inputs
+  ---
+  duration_ms: 3.786496
+  type: 'test'
+  ...
+# Subtest: isPrivateIPv4 — Number() coercion edge cases
+    # Subtest: "  10.0.0.1  " is treated as 10.0.0.1 (private)
+    ok 1 - "  10.0.0.1  " is treated as 10.0.0.1 (private)
+      ---
+      duration_ms: 0.152806
+      type: 'test'
+      ...
+    # Subtest: "10.0.0.01" is treated as 10.0.0.1 (private)
+    ok 2 - "10.0.0.01" is treated as 10.0.0.1 (private)
+      ---
+      duration_ms: 0.139781
+      type: 'test'
+      ...
+    1..2
+ok 41 - isPrivateIPv4 — Number() coercion edge cases
+  ---
+  duration_ms: 0.606503
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — allow list (string comparison)
+    # Subtest: exact origin match bypasses blocked private IP literal
+    ok 1 - exact origin match bypasses blocked private IP literal
+      ---
+      duration_ms: 0.193541
+      type: 'test'
+      ...
+    # Subtest: origin with port match bypasses blocked private IP literal
+    ok 2 - origin with port match bypasses blocked private IP literal
+      ---
+      duration_ms: 0.157154
+      type: 'test'
+      ...
+    # Subtest: bare hostname match bypasses blocked private IP literal
+    ok 3 - bare hostname match bypasses blocked private IP literal
+      ---
+      duration_ms: 0.219931
+      type: 'test'
+      ...
+    # Subtest: allow list origin with path is treated as origin-only match
+    ok 4 - allow list origin with path is treated as origin-only match
+      ---
+      duration_ms: 0.137637
+      type: 'test'
+      ...
+    # Subtest: allow list bypasses blocked localhost hostname
+    ok 5 - allow list bypasses blocked localhost hostname
+      ---
+      duration_ms: 0.130204
+      type: 'test'
+      ...
+    # Subtest: non-matching allow list does not bypass private IP literal
+    ok 6 - non-matching allow list does not bypass private IP literal
+      ---
+      duration_ms: 0.183092
+      type: 'test'
+      ...
+    # Subtest: port mismatch in origin does not match — different origin
+    ok 7 - port mismatch in origin does not match — different origin
+      ---
+      duration_ms: 0.193311
+      type: 'test'
+      ...
+    1..7
+ok 42 - isSafeUrl — allow list (string comparison)
+  ---
+  duration_ms: 1.89407
+  type: 'test'
+  ...
+# Subtest: isSafeUrl — allow list (DNS-based: resolves to same IP as allowed hostname)
+    # Subtest: allow list with IP literal allows URL whose hostname is that same IP literal
+    ok 1 - allow list with IP literal allows URL whose hostname is that same IP literal
+      ---
+      duration_ms: 0.145792
+      type: 'test'
+      ...
+    # Subtest: allow list with mismatched IP does not allow private IP
+    ok 2 - allow list with mismatched IP does not allow private IP
+      ---
+      duration_ms: 0.156062
+      type: 'test'
+      ...
+    1..2
+ok 43 - isSafeUrl — allow list (DNS-based: resolves to same IP as allowed hostname)
+  ---
+  duration_ms: 0.550489
+  type: 'test'
+  ...
+# Subtest: test/utils.ts
+ok 4 - test/utils.ts
+  ---
+  duration_ms: 864.26894
+  type: 'test'
+  ...
+1..44
+# tests 198
+# suites 0
+# pass 198
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1634.690676

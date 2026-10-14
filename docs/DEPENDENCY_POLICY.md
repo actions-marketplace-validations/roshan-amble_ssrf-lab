@@ -20,6 +20,7 @@ or newer on a release line supported by Vitest 5.
 | ssrf-agent | 1.0.5 | Vulnerable research target |
 | ip | 1.1.9 | Transitive dependency of ssrf-agent |
 | ipaddr.js | 2.5.0 | Transitive dependency of the comparison targets |
+| guarded-fetch | 0.1.5 | Additional comparison target |
 
 The dependency-upgrade verification compared each of these packages' versions,
 resolved tarball URLs, and integrity hashes against the original lockfile.
@@ -51,9 +52,35 @@ node scripts/check-audit.mjs
 evaluates the report. Never disable the audit or allow all advisories on a package
 just because it is part of a security lab.
 
+## Separate n8n research fixture
+
+The optional n8n integration has its own lockfile and audit gate under
+`integrations/n8n/`. It pins `@n8n/backend-network@1.17.3` and
+`@n8n/config@2.41.2`, matching the components in n8n 2.43.5. Its reviewed audit
+snapshot contains eight vulnerable package entries: `@n8n/api-types`,
+`@n8n/backend-common`, `@n8n/backend-network`, `@n8n/decorators`, `axios`,
+`n8n-workflow`, `qs`, and `stream-json`. These include transitive impact entries,
+not eight new discoveries.
+
+`integrations/n8n/reviewed-audit.json` records exact advisory URLs, affected
+ranges, severities, install paths, and pinned versions. The separate gate
+rejects new advisories, package entries, paths, or versions, and permits removal
+of reviewed advisories. Five tests cover that gate. The fixture is kept intact
+for reproducibility and exercised only as a local research client. Do not
+interpret the exception as a production dependency recommendation.
+
+```bash
+node --test integrations/n8n/check-audit.test.mjs
+npm audit --prefix integrations/n8n --json > verification/n8n-audit.json
+node integrations/n8n/check-audit.mjs verification/n8n-audit.json
+```
+
 ## Isolation
 
 CI installs dependencies before creating a network namespace, then runs the tests,
 scans, and demonstration with only loopback enabled. There is no fallback to an
 unrestricted network. The verification workflow has only repository read access;
 it does not publish packages, create releases, or modify repository content.
+The new integration job assigns a public-shaped entry address to `lo` inside
+that namespace, with no external interfaces or routes. See
+[integration reproduction](INTEGRATIONS.md) for its fail-closed checks.

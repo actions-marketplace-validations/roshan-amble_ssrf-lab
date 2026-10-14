@@ -1,0 +1,108 @@
+diff --git a/lib/fetch.ts b/lib/fetch.ts
+index 7731842..3184d63 100644
+--- a/lib/fetch.ts
++++ b/lib/fetch.ts
+@@ -2,7 +2,7 @@ import Err from '@openaddresses/batch-error';
+ import type { Static, TSchema, TUnknown } from '@sinclair/typebox';
+ import { Value } from '@sinclair/typebox/value';
+ import { TypeCompiler } from '@sinclair/typebox/compiler';
+-import { fetch, Response } from 'undici';
++import { fetch, Headers, Response } from 'undici';
+ import type { RequestInfo, RequestInit } from 'undici';
+ import { isSafeUrl } from './safeurl.js';
+ 
+@@ -162,6 +162,14 @@ export default async function (
+             if (switchToGet) {
+                 fetchInit.method = 'GET';
+                 fetchInit.body = undefined;
++                // Fetch's redirect algorithm removes headers describing the
++                // discarded body. Copy all HeadersInit forms without mutating
++                // the caller's headers.
++                const headers = new Headers(fetchInit.headers);
++                for (const name of ['content-encoding', 'content-language', 'content-location', 'content-type', 'content-length']) {
++                    headers.delete(name);
++                }
++                fetchInit.headers = headers;
+             }
+ 
+             currentInput = resolved;
+diff --git a/test/redirect-body-headers.test.ts b/test/redirect-body-headers.test.ts
+new file mode 100644
+index 0000000..953783c
+--- /dev/null
++++ b/test/redirect-body-headers.test.ts
+@@ -0,0 +1,74 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { createServer } from 'node:http';
++import { once } from 'node:events';
++import { Headers } from 'undici';
++import type { AddressInfo } from 'node:net';
++import safeFetch from '../lib/fetch.js';
++
++test('redirects remove body headers only when rewriting the method to GET', async (t) => {
++    const observed: Array<{ method: string | undefined; body: string; headers: Record<string, string | string[] | undefined> }> = [];
++    const server = createServer(async (request, response) => {
++        const chunks: Buffer[] = [];
++        for await (const chunk of request) chunks.push(chunk);
++        observed.push({ method: request.method, body: Buffer.concat(chunks).toString(), headers: request.headers });
++        if (request.url?.startsWith('/redirect/')) {
++            response.writeHead(Number(request.url.split('/').at(-1)), { location: '/done' });
++        }
++        response.end('ok');
++    });
++    server.listen(0, '127.0.0.1');
++    await once(server, 'listening');
++    t.after(async () => {
++        server.closeAllConnections();
++        await new Promise<void>((resolve) => server.close(() => resolve()));
++    });
++    const origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
++    const headerValues = {
++        'Content-Type': 'text/plain',
++        'Content-Encoding': 'identity',
++        'Content-Language': 'en',
++        'Content-Location': '/payload',
++        'Content-Length': '5',
++        'X-Keep': 'present',
++    };
++
++    for (const [status, method] of [[301, 'POST'], [302, 'POST'], [303, 'PUT']] as const) {
++        await t.test(`${status} ${method} drops body headers and preserves caller headers`, async () => {
++            const headers = status === 301 ? { ...headerValues }
++                : status === 302 ? Object.entries(headerValues) : new Headers(headerValues);
++            const before = [...new Headers(headers).entries()];
++            observed.length = 0;
++            const response = await safeFetch(`${origin}/redirect/${status}`, {
++                method, body: 'hello', headers, safeUrlAllow: [origin], timeout: 2000,
++            });
++            await response.text();
++            assert.equal(observed.length, 2);
++            assert.equal(observed[0].method, method);
++            assert.equal(observed[0].body, 'hello');
++            assert.equal(observed[1].method, 'GET');
++            assert.equal(observed[1].body, '');
++            for (const name of Object.keys(headerValues).filter(name => name.startsWith('Content-'))) {
++                assert.equal(observed[1].headers[name.toLowerCase()], undefined, name);
++            }
++            assert.equal(observed[1].headers['x-keep'], 'present');
++            assert.deepEqual([...new Headers(headers).entries()], before);
++        });
++    }
++
++    for (const [status, method] of [[307, 'POST'], [308, 'POST'], [301, 'PUT'], [302, 'PUT']] as const) {
++        await t.test(`${status} ${method} preserves the method, body, and body headers`, async () => {
++            observed.length = 0;
++            const response = await safeFetch(`${origin}/redirect/${status}`, {
++                method, body: 'hello', headers: headerValues, safeUrlAllow: [origin], timeout: 2000,
++            });
++            await response.text();
++            assert.equal(observed.length, 2);
++            assert.equal(observed[1].method, method);
++            assert.equal(observed[1].body, 'hello');
++            for (const [name, value] of Object.entries(headerValues)) {
++                assert.equal(observed[1].headers[name.toLowerCase()], value);
++            }
++        });
++    }
++});

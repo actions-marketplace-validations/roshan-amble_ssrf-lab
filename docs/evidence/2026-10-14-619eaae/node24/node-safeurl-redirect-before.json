@@ -1,0 +1,122 @@
+{
+  "environment": {
+    "node": "v24.21.0",
+    "platform": "linux",
+    "kernel": "6.17.0-1022-azure",
+    "measuredAt": "2026-10-14T22:55:52.038Z"
+  },
+  "package": "@tak-ps/node-safeurl@1.8.0",
+  "scope": "Same-origin redirect method rewriting, explicit loopback allowlist",
+  "results": [
+    {
+      "status": 301,
+      "method": "POST",
+      "native": {
+        "ok": true,
+        "response": {
+          "method": "GET",
+          "body": "",
+          "contentLength": null,
+          "contentType": null
+        }
+      },
+      "node-safeurl": {
+        "ok": true,
+        "response": {
+          "method": "GET",
+          "body": "",
+          "contentLength": null,
+          "contentType": "text/plain"
+        }
+      }
+    },
+    {
+      "status": 302,
+      "method": "POST",
+      "native": {
+        "ok": true,
+        "response": {
+          "method": "GET",
+          "body": "",
+          "contentLength": null,
+          "contentType": null
+        }
+      },
+      "node-safeurl": {
+        "ok": true,
+        "response": {
+          "method": "GET",
+          "body": "",
+          "contentLength": null,
+          "contentType": "text/plain"
+        }
+      }
+    },
+    {
+      "status": 303,
+      "method": "PUT",
+      "native": {
+        "ok": true,
+        "response": {
+          "method": "GET",
+          "body": "",
+          "contentLength": null,
+          "contentType": null
+        }
+      },
+      "node-safeurl": {
+        "ok": true,
+        "response": {
+          "method": "GET",
+          "body": "",
+          "contentLength": null,
+          "contentType": "text/plain"
+        }
+      }
+    },
+    {
+      "status": 307,
+      "method": "POST",
+      "native": {
+        "ok": true,
+        "response": {
+          "method": "POST",
+          "body": "hello",
+          "contentLength": "5",
+          "contentType": "text/plain"
+        }
+      },
+      "node-safeurl": {
+        "ok": true,
+        "response": {
+          "method": "POST",
+          "body": "hello",
+          "contentLength": "5",
+          "contentType": "text/plain"
+        }
+      }
+    },
+    {
+      "status": 308,
+      "method": "POST",
+      "native": {
+        "ok": true,
+        "response": {
+          "method": "POST",
+          "body": "hello",
+          "contentLength": "5",
+          "contentType": "text/plain"
+        }
+      },
+      "node-safeurl": {
+        "ok": true,
+        "response": {
+          "method": "POST",
+          "body": "hello",
+          "contentLength": "5",
+          "contentType": "text/plain"
+        }
+      }
+    }
+  ]
+}

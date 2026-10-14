@@ -1,0 +1,107 @@
+{
+  "reason": "Exact research dependencies of n8n 2.43.5. Keep these versions reproducible; no production safety claim. Reviewed only for isolated local HTTP fixture testing. Existing advisories are not ssrf-lab discoveries.",
+  "versions": {
+    "node_modules/@n8n/api-types": "1.43.3",
+    "node_modules/@n8n/backend-common": "1.43.3",
+    "node_modules/@n8n/backend-network": "1.17.3",
+    "node_modules/@n8n/decorators": "1.43.3",
+    "node_modules/axios": "1.18.0",
+    "node_modules/n8n-workflow": "2.43.3",
+    "node_modules/qs": "6.15.2",
+    "node_modules/stream-json": "1.9.1"
+  },
+  "findings": {
+    "@n8n/api-types": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@n8n/api-types"
+      ],
+      "via": [
+        "n8n-workflow"
+      ]
+    },
+    "@n8n/backend-common": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@n8n/backend-common"
+      ],
+      "via": [
+        "@n8n/decorators",
+        "n8n-workflow",
+        "stream-json"
+      ]
+    },
+    "@n8n/backend-network": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@n8n/backend-network"
+      ],
+      "via": [
+        "@n8n/backend-common",
+        "axios",
+        "n8n-workflow",
+        "qs"
+      ]
+    },
+    "@n8n/decorators": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@n8n/decorators"
+      ],
+      "via": [
+        "@n8n/api-types",
+        "n8n-workflow"
+      ]
+    },
+    "axios": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/axios"
+      ],
+      "via": [
+        "https://github.com/advisories/GHSA-3pq3-5fj3-cg6v|>=1.13.0 <1.20.0|high",
+        "https://github.com/advisories/GHSA-44g4-m2mj-wpvx|>=1.15.0 <1.20.0|moderate",
+        "https://github.com/advisories/GHSA-4hqw-qxg8-jxx2|>=1.12.0 <1.20.0|moderate",
+        "https://github.com/advisories/GHSA-542g-h47m-68v8|>=1.13.0 <1.20.0|high",
+        "https://github.com/advisories/GHSA-9fr6-4gfg-395g|>=1.0.0 <1.20.0|moderate",
+        "https://github.com/advisories/GHSA-c29m-xwm3-cm6r|>=1.16.1 <1.20.0|high",
+        "https://github.com/advisories/GHSA-j8rh-479h-cp32|>=1.0.0 <1.20.0|moderate",
+        "https://github.com/advisories/GHSA-m8m8-qj5v-23w3|>=1.15.2 <1.20.0|high",
+        "https://github.com/advisories/GHSA-mghh-pgcx-3jjj|>=1.15.0 <1.20.0|high",
+        "https://github.com/advisories/GHSA-r4gj-5m52-g5wh|>=1.17.0 <1.20.0|high",
+        "https://github.com/advisories/GHSA-vh66-26gq-q6x8|>=1.7.0 <1.20.0|moderate",
+        "https://github.com/advisories/GHSA-x97p-jq2g-jp4f|>=1.15.1 <1.20.0|high"
+      ]
+    },
+    "n8n-workflow": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/n8n-workflow"
+      ],
+      "via": [
+        "axios"
+      ]
+    },
+    "qs": {
+      "severity": "moderate",
+      "nodes": [
+        "node_modules/qs"
+      ],
+      "via": [
+        "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g|>=2.2.5 <6.16.0|moderate",
+        "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx|>=6.14.2 <=6.15.3|moderate"
+      ]
+    },
+    "stream-json": {
+      "severity": "moderate",
+      "nodes": [
+        "node_modules/stream-json"
+      ],
+      "via": [
+        "https://github.com/advisories/GHSA-528h-pc64-c93x|<=3.4.0|moderate",
+        "https://github.com/advisories/GHSA-hqr4-qq8f-hg3x|<=3.5.0|moderate",
+        "https://github.com/advisories/GHSA-mjw6-4jj6-33hc|<3.6.0|moderate"
+      ]
+    }
+  }
+}

@@ -23,6 +23,7 @@ function measuredRange(): { range: AttackRange; hit: () => void } {
       internalPort: 2222,
       url: (path) => `http://127.0.0.1:1111${path}`,
       internalHits: () => hits,
+      publicHits: () => 0,
       close: async () => {},
     },
   }

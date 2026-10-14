@@ -1,0 +1,10 @@
+ssrf-lab@0.1.0 /home/runner/work/ssrf-lab/ssrf-lab
+├── @types/node@22.20.2
+├── guarded-fetch@0.1.5
+├── request-filtering-agent@3.2.1
+├── ssrf-agent@1.0.5
+├── ssrf-req-filter@1.1.1
+├── tsx@4.23.13
+├── typescript@5.9.3
+└── vitest@5.0.3
+

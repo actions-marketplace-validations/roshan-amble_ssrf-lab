@@ -1,0 +1,10 @@
+{
+  "name": "ssrf-lab-community-integrations",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tak-ps/node-safeurl": "1.8.0",
+    "ssrf-fetch": "0.1.0",
+    "ssrf-safe-fetch": "0.1.0"
+  }
+}

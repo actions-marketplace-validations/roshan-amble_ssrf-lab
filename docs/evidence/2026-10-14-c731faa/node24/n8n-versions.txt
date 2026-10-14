@@ -1,0 +1,4 @@
+ssrf-lab-n8n-integration@ /home/runner/work/ssrf-lab/ssrf-lab/integrations/n8n
+├── @n8n/backend-network@1.17.3
+└── @n8n/config@2.41.2
+

@@ -13,6 +13,7 @@ const fakeRange: AttackRange = {
   url: (path: string) => `http://127.0.0.1:1111${path}`,
   // The stubs never open a socket, so the internal service is never hit.
   internalHits: () => 0,
+  publicHits: () => 0,
   close: async () => {},
 }
 

@@ -1,0 +1,4 @@
+
+> @tak-ps/node-safeurl@1.8.0 lint
+> eslint *.ts lib/ test/
+
