@@ -27,18 +27,20 @@ try {
     for (const [name, client] of [['native', fetch], ['node-safeurl', safeFetch]]) {
       try {
         const response = await client(`${origin}/redirect/${status}`, {
-          method, body: 'hello', headers: { 'content-length': '5', 'content-type': 'text/plain' },
+          // Let the runtime derive Content-Length; the upstream regression test
+          // separately checks caller-supplied framing headers.
+          method, body: 'hello', headers: { 'content-type': 'text/plain' },
           signal: AbortSignal.timeout(2000), ...(name === 'node-safeurl' ? { safeUrlAllow: [origin] } : {}),
         })
         measurements[name] = { ok: true, response: await response.json() }
       } catch (error) {
-        measurements[name] = { ok: false, message: error.message, cause: error.cause?.code ?? error.cause?.message }
+        measurements[name] = { ok: false, message: error.message, cause: error.cause?.code, causeMessage: error.cause?.message }
       }
     }
-    assert(measurements.native.ok, 'Reference fetch must succeed')
     results.push({ status, method, ...measurements })
   }
   console.log(JSON.stringify({ environment: environment(), package: '@tak-ps/node-safeurl@1.8.0', scope: 'Same-origin redirect method rewriting, explicit loopback allowlist', results }, null, 2))
+  for (const result of results) assert(result.native.ok, `Reference fetch must succeed: ${JSON.stringify(result)}`)
 } finally {
   server.closeAllConnections()
   await new Promise(resolve => server.close(resolve))
