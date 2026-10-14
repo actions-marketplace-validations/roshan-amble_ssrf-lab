@@ -1,0 +1,59 @@
+TAP version 13
+# Subtest: redirects remove body headers only when rewriting the method to GET
+    # Subtest: 301 POST drops body headers and preserves caller headers
+    ok 1 - 301 POST drops body headers and preserves caller headers
+      ---
+      duration_ms: 39.575601
+      type: 'test'
+      ...
+    # Subtest: 302 POST drops body headers and preserves caller headers
+    ok 2 - 302 POST drops body headers and preserves caller headers
+      ---
+      duration_ms: 6.420208
+      type: 'test'
+      ...
+    # Subtest: 303 PUT drops body headers and preserves caller headers
+    ok 3 - 303 PUT drops body headers and preserves caller headers
+      ---
+      duration_ms: 5.262029
+      type: 'test'
+      ...
+    # Subtest: 307 POST preserves the method, body, and body headers
+    ok 4 - 307 POST preserves the method, body, and body headers
+      ---
+      duration_ms: 4.925706
+      type: 'test'
+      ...
+    # Subtest: 308 POST preserves the method, body, and body headers
+    ok 5 - 308 POST preserves the method, body, and body headers
+      ---
+      duration_ms: 5.481041
+      type: 'test'
+      ...
+    # Subtest: 301 PUT preserves the method, body, and body headers
+    ok 6 - 301 PUT preserves the method, body, and body headers
+      ---
+      duration_ms: 4.083592
+      type: 'test'
+      ...
+    # Subtest: 302 PUT preserves the method, body, and body headers
+    ok 7 - 302 PUT preserves the method, body, and body headers
+      ---
+      duration_ms: 3.068122
+      type: 'test'
+      ...
+    1..7
+ok 1 - redirects remove body headers only when rewriting the method to GET
+  ---
+  duration_ms: 79.071492
+  type: 'test'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 500.620932

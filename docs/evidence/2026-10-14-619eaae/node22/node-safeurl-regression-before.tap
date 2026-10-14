@@ -1,0 +1,123 @@
+TAP version 13
+# Subtest: redirects remove body headers only when rewriting the method to GET
+    # Subtest: 301 POST drops body headers and preserves caller headers
+    not ok 1 - 301 POST drops body headers and preserves caller headers
+      ---
+      duration_ms: 35.944009
+      type: 'test'
+      location: '/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:1:1135'
+      failureType: 'testCodeFailure'
+      error: |-
+        Content-Type
+        + actual - expected
+        
+        + 'text/plain'
+        - undefined
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      actual: 'text/plain'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:52:24)
+        process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:37:9)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: 302 POST drops body headers and preserves caller headers
+    not ok 2 - 302 POST drops body headers and preserves caller headers
+      ---
+      duration_ms: 8.923338
+      type: 'test'
+      location: '/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:1:1135'
+      failureType: 'testCodeFailure'
+      error: |-
+        Content-Type
+        + actual - expected
+        
+        + 'text/plain'
+        - undefined
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      actual: 'text/plain'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:52:24)
+        process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:37:9)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: 303 PUT drops body headers and preserves caller headers
+    not ok 3 - 303 PUT drops body headers and preserves caller headers
+      ---
+      duration_ms: 7.000554
+      type: 'test'
+      location: '/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:1:1135'
+      failureType: 'testCodeFailure'
+      error: |-
+        Content-Type
+        + actual - expected
+        
+        + 'text/plain'
+        - undefined
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      actual: 'text/plain'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:52:24)
+        process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:37:9)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: 307 POST preserves the method, body, and body headers
+    ok 4 - 307 POST preserves the method, body, and body headers
+      ---
+      duration_ms: 8.041259
+      type: 'test'
+      ...
+    # Subtest: 308 POST preserves the method, body, and body headers
+    ok 5 - 308 POST preserves the method, body, and body headers
+      ---
+      duration_ms: 9.083727
+      type: 'test'
+      ...
+    # Subtest: 301 PUT preserves the method, body, and body headers
+    ok 6 - 301 PUT preserves the method, body, and body headers
+      ---
+      duration_ms: 6.308321
+      type: 'test'
+      ...
+    # Subtest: 302 PUT preserves the method, body, and body headers
+    ok 7 - 302 PUT preserves the method, body, and body headers
+      ---
+      duration_ms: 6.59212
+      type: 'test'
+      ...
+    1..7
+not ok 1 - redirects remove body headers only when rewriting the method to GET
+  ---
+  duration_ms: 91.91621
+  type: 'test'
+  location: '/home/runner/work/_temp/node-safeurl/test/redirect-body-headers.test.ts:1:201'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 4
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 634.596148

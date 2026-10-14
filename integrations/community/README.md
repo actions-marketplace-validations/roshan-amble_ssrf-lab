@@ -1,5 +1,7 @@
 # Additional published-package comparisons
 
+[Recorded Node 22 and 24 results, including the before/after patch proof](../../docs/evidence/2026-10-14-619eaae/README.md).
+
 | Target | Pinned version | Upstream |
 | --- | --- | --- |
 | ssrf-safe-fetch | 0.1.0 | [Chinozilla/ssrf-safe-fetch](https://github.com/Chinozilla/ssrf-safe-fetch) |

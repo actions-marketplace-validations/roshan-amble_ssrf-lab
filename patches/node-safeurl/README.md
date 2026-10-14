@@ -24,6 +24,10 @@ source and pass with the patch; the four controls pass both before and after.
 The full upstream suite passed locally with 198 tests, plus lint and build.
 CI repeats the before/after regression and full patched suite on Node 22 and 24.
 
+[Recorded CI proof on both runtimes](../../docs/evidence/2026-10-14-619eaae/README.md)
+includes the original failures, fixed tests, all 198 upstream tests, and build/lint
+logs. Both runtime jobs passed.
+
 To reproduce the published-package comparison from the ssrf-lab root:
 
 ```bash
