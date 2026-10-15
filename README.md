@@ -3,7 +3,8 @@
 **A failed HTTP request is not proof that your SSRF defense worked.**
 
 Test the Node.js fetcher behind your link previews, URL imports or webhook
-destinations. Keep regressions that reach an internal service out of CI.
+destinations. Catch regressions that reach an internal service in CI before
+they ship.
 
 `ssrf-lab` is a local attack range and conformance checker for Node.js HTTP
 clients. It distinguishes an explicit security refusal from a request that
