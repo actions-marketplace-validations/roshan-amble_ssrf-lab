@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: roshan-amble/ssrf-lab
-          ref: feat/custom-fetcher-onboarding
+          ref: 39d14c8737639f71728eb520bd0b4c1899358768
           path: .ssrf-lab
           persist-credentials: false
       - name: Install and build the test harness
