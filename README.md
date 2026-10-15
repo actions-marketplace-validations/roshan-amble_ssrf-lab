@@ -2,6 +2,9 @@
 
 **A failed HTTP request is not proof that your SSRF defense worked.**
 
+Test the Node.js fetcher behind your link previews, URL imports or webhook
+destinations. Keep regressions that reach an internal service out of CI.
+
 `ssrf-lab` is a local attack range and conformance checker for Node.js HTTP
 clients. It distinguishes an explicit security refusal from a request that
 failed for an unrelated reason, using a canary and an independent hit counter.
@@ -10,6 +13,19 @@ If the internal service saw the request, a later error cannot make it `BLOCKED`.
 ![ci](https://github.com/roshan-amble/ssrf-lab/actions/workflows/ci.yml/badge.svg)
 
 **10 main SSRF/fetch-safety probes · 7 separate direct-address cases · MIT · Node.js 22.12+**
+
+**[Test your own fetcher](examples/custom-fetcher/README.md)** with a complete
+application module, a deliberately unsafe control, and a copyable isolated CI
+workflow. Start with seven local cases; CI adds two redirects and verifies that
+an allowed request succeeds. The example requires Node.js 22.19+.
+
+**Current evidence:** pinned comparisons include Vercel Labs' `guarded-fetch`,
+n8n's outbound networking component and three additional fetch wrappers.
+[See coverage and recorded results](docs/INTEGRATIONS.md).
+A reproduced redirect-conformance bug has a tested fix submitted as
+[node-safeurl PR #4](https://github.com/dfpc-coe/node-safeurl/pull/4), awaiting
+review. These are bounded tests of the named versions, not endorsements or
+coverage of entire applications.
 
 **Recorded results: seven local address cases, three pinned packages.**
 
@@ -270,6 +286,14 @@ A socket inactivity timeout is not a whole-request deadline: a slow target can
 keep the socket active without finishing the response.
 
 ## Use it on your own client
+
+Start with the [runnable fetch-compatible example](examples/custom-fetcher/README.md)
+and its [GitHub Actions workflow](examples/custom-fetcher/ssrf-check.yml).
+They include real request measurement, positive and negative controls, explicit
+error mapping, cleanup and exit codes. Replace one application module to test
+your existing fetcher.
+
+For clients that need the lower-level adapter interface:
 
 After building this repository, import `./dist/index.js` from an example file at
 the repository root. The adapter shape is illustrated below; replace its `fetch`

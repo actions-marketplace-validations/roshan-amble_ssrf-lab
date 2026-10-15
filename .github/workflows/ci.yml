@@ -48,6 +48,7 @@ jobs:
           npm run typecheck 2>&1 | tee verification/typecheck.txt
           npm run build 2>&1 | tee verification/build.txt
           node --check scripts/demo.mjs
+          node --test examples/custom-fetcher/adapter.test.mjs | tee verification/custom-fetcher-tests.txt
           python3 -m py_compile scripts/record-demo.py
       # Unsafe clients must not contact real metadata services or other networks.
       - name: Tests, compiled CLI, and real demo in a loopback-only network
@@ -163,6 +164,12 @@ jobs:
             node integrations/n8n/verify.mjs > verification/n8n.json
             node integrations/community/verify.mjs > verification/community.json
             node integrations/community/check-redirects.mjs > verification/node-safeurl-redirect-before.json
+            node examples/custom-fetcher/check.mjs --isolated --json > verification/custom-fetcher.json
+            set +e
+            node examples/custom-fetcher/check.mjs --isolated --unsafe --json > verification/custom-fetcher-unsafe.json
+            status=$?
+            set -e
+            test "$status" -eq 1
           '
       - name: Prove the upstream regression fails before the patch and passes after
         run: |
@@ -202,6 +209,12 @@ jobs:
             const report = JSON.parse(readFileSync(`verification/${name}.json`, 'utf8'));
             for (const scan of report.scans) console.log(renderTable(scan));
           }
+          const onboarding = JSON.parse(readFileSync('verification/custom-fetcher.json', 'utf8'));
+          if (onboarding.scan.blocked !== 9 || onboarding.scan.reached !== 0 || onboarding.exitCode !== 0 ||
+              onboarding.scan.positiveControl.publicHits < 1 || onboarding.negativeControl.reached !== 2) {
+            throw new Error('Custom-fetcher onboarding did not demonstrate its documented coverage');
+          }
+          console.log(renderTable(onboarding.scan));
           NODE
       - name: Preserve comparison evidence
         if: always()
