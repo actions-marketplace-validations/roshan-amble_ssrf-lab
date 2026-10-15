@@ -1,0 +1,60 @@
+# Copy to .github/workflows/ssrf-check.yml in your application repository.
+# Add test/ssrf-fetcher.mjs as described in the accompanying README first.
+name: SSRF regression check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ssrf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install and build the application
+        run: |
+          npm ci
+          npm run build --if-present
+      - name: Check out the pinned test harness
+        uses: actions/checkout@v5
+        with:
+          repository: roshan-amble/ssrf-lab
+          ref: 39d14c8737639f71728eb520bd0b4c1899358768
+          path: .ssrf-lab
+          persist-credentials: false
+      - name: Install and build the test harness
+        run: |
+          npm ci --ignore-scripts --prefix .ssrf-lab
+          npm run build --prefix .ssrf-lab
+      - name: Test the application in an isolated network
+        run: |
+          sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
+            ip link set lo up
+            ip address add 93.184.216.34/32 dev lo
+            node .ssrf-lab/examples/custom-fetcher/check.mjs \
+              --module ./test/ssrf-fetcher.mjs --isolated --json
+          ' > ssrf-report.json 2> ssrf-errors.txt
+      - name: Keep the report, including failed checks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ssrf-regression-${{ github.sha }}
+          path: |
+            ssrf-report.json
+            ssrf-errors.txt
+          if-no-files-found: warn
+          retention-days: 14
