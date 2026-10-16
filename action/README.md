@@ -35,7 +35,7 @@ jobs:
       - run: npm run build --if-present
       - name: Test the application fetcher
         id: ssrf
-        uses: roshan-amble/ssrf-lab@ACTION_COMMIT
+        uses: roshan-amble/ssrf-lab@ac0d4906592a5c41c27785b7a4327d449bc10da9
         with:
           fetcher-module: test/ssrf-fetcher.mjs
       - name: Preserve the result, including failed checks
@@ -49,8 +49,9 @@ jobs:
           if-no-files-found: warn
 ```
 
-Replace `ACTION_COMMIT` with the tested Action commit listed in the tutorial.
-Use an immutable commit pin when adopting the Action.
+This example pins the Action implementation to an immutable commit. See the
+[tutorial](../docs/tutorials/node-fetcher-github-actions.md) for the walkthrough
+and linked verification evidence.
 
 | Input | Meaning |
 | --- | --- |

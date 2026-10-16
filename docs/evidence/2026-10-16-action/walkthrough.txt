@@ -1,0 +1,76 @@
+$ node scripts/walkthrough.mjs verification/walkthrough
+[2J[Hssrf-lab | A failed request does not prove SSRF protection
+=======================================================================================
+
+This is a recorded execution, with pauses for reading.
+
+1. Native fetch: the internal service receives the requests.
+2. The included guarded-fetch example: explicit policy refusals.
+3. The exit status becomes the CI gate.
+
+Environment: GitHub Ubuntu runner, loopback-only network namespace.
+Node: v24.21.0
+Scope: seven direct-address cases + two redirects. No DNS rebinding or TLS.
+[2J[Hssrf-lab | 1 / 2 | Deliberately unsafe control
+=======================================================================================
+
+$ node examples/custom-fetcher/check.mjs --isolated --unsafe --json
+
+Running real requests inside the isolated fixture...
+
+PROBE                           RESULT      INTERNAL HITS
+direct-dotted                   REACHED     1
+direct-decimal                  REACHED     1
+direct-octal                    REACHED     1
+direct-hex                      REACHED     1
+direct-zero-host                REACHED     1
+direct-ipv6-mapped              REACHED     1
+direct-credentials              PREVENTED   0
+redirect-loopback               REACHED     1
+redirect-decimal-loopback       REACHED     1
+
+Allowed entry: HTTP 200; measured hits: 1
+Native-fetch controls: 2/2 reached, as required.
+Gate exit: 1 | CI fails: internal requests arrived.
+
+Table rendered from this command's captured JSON. Raw reports are saved.
+[2J[Hssrf-lab | 2 / 2 | Example application using guarded-fetch 0.1.5
+=======================================================================================
+
+$ node examples/custom-fetcher/check.mjs --isolated --json
+
+Running real requests inside the isolated fixture...
+
+PROBE                           RESULT      INTERNAL HITS
+direct-dotted                   BLOCKED     0
+direct-decimal                  BLOCKED     0
+direct-octal                    BLOCKED     0
+direct-hex                      BLOCKED     0
+direct-zero-host                BLOCKED     0
+direct-ipv6-mapped              BLOCKED     0
+direct-credentials              BLOCKED     0
+redirect-loopback               BLOCKED     0
+redirect-decimal-loopback       BLOCKED     0
+
+Allowed entry: HTTP 200; measured hits: 1
+Native-fetch controls: 2/2 reached, as required.
+Gate exit: 0 | CI passes: all nine cases explicitly refused.
+
+Table rendered from this command's captured JSON. Raw reports are saved.
+[2J[Hssrf-lab | Use your application's actual fetcher
+=======================================================================================
+
+The same checker drives the reusable GitHub Action.
+
+Captured unsafe run:    8/9 reached, exit 1
+Captured protected run: 9/9 blocked, exit 0
+
+Connect your existing fetch function and its real policy errors.
+Keep the successful-entry and unsafe-client controls.
+
+Get the tutorial, code, raw reports and recording:
+github.com/roshan-amble/ssrf-lab
+
+Bounded regression coverage. Not a security certification.
+
+[process exited 0]

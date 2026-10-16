@@ -20,6 +20,11 @@ application module, a deliberately unsafe control, and a copyable isolated CI
 workflow. Start with seven local cases; CI adds two redirects and verifies that
 an allowed request succeeds. The example requires Node.js 22.19+.
 
+**New:** [Step-by-step CI tutorial](docs/tutorials/node-fetcher-github-actions.md)
+· [Reusable GitHub Action](action/README.md)
+· [48-second recorded execution](docs/media/ssrf-lab-walkthrough.mp4)
+([raw recording and reports](docs/evidence/2026-10-16-action/README.md)).
+
 **Current evidence:** pinned comparisons include Vercel Labs' `guarded-fetch`,
 n8n's outbound networking component and three additional fetch wrappers.
 [See coverage and recorded results](docs/INTEGRATIONS.md).
