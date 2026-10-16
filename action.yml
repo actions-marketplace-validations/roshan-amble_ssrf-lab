@@ -1,0 +1,41 @@
+name: SSRF Lab Regression Check
+description: Test a Node.js fetcher against isolated SSRF fixtures and independent request counters.
+author: Roshan Amble
+branding:
+  icon: shield
+  color: blue
+inputs:
+  fetcher-module:
+    description: Path to the application's fetchUrl module, relative to working-directory.
+    required: true
+  working-directory:
+    description: Application directory, relative to the checked-out workspace.
+    default: '.'
+outputs:
+  report-path:
+    description: Absolute path to the JSON report, available even for a failed check.
+    value: ${{ steps.check.outputs.report-path }}
+  errors-path:
+    description: Absolute path to the setup or execution error log.
+    value: ${{ steps.check.outputs.errors-path }}
+  exit-code:
+    description: '0 means explicit refusals; 1 means internal reach; 2 means inconclusive or setup failure.'
+    value: ${{ steps.check.outputs.exit-code }}
+runs:
+  using: composite
+  steps:
+    - name: Build the pinned harness
+      shell: bash
+      env:
+        SSRF_LAB_ROOT: ${{ github.action_path }}
+      run: |
+        npm ci --ignore-scripts --prefix "$SSRF_LAB_ROOT"
+        npm run build --prefix "$SSRF_LAB_ROOT"
+    - name: Check the application in an isolated network
+      id: check
+      shell: bash
+      env:
+        SSRF_LAB_ROOT: ${{ github.action_path }}
+        SSRF_LAB_MODULE: ${{ inputs.fetcher-module }}
+        SSRF_LAB_WORKDIR: ${{ inputs.working-directory }}
+      run: node "$SSRF_LAB_ROOT/action/run.mjs"

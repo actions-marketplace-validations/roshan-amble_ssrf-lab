@@ -1,0 +1,111 @@
+name: action verification
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - name: Prepare consumer modules, including a path containing spaces
+        shell: bash
+        run: |
+          mkdir -p 'consumer app/test'
+          cp examples/custom-fetcher/app-fetch.mjs 'consumer app/test/fetcher.mjs'
+          cat > 'consumer app/test/unsafe.mjs' <<'JS'
+          export const name = 'unsafe consumer';
+          export const fetchUrl = (url, { signal }) => fetch(url, { signal });
+          JS
+          cat > 'consumer app/test/inconclusive.mjs' <<'JS'
+          export const fetchUrl = () => { throw new Error('unexplained connection failure'); };
+          JS
+      - name: Protected consumer passes
+        id: protected
+        uses: ./
+        with:
+          working-directory: consumer app
+          fetcher-module: test/fetcher.mjs
+      - name: Unsafe consumer fails
+        id: unsafe
+        continue-on-error: true
+        uses: ./
+        with:
+          working-directory: consumer app
+          fetcher-module: test/unsafe.mjs
+      - name: Inconclusive consumer fails
+        id: inconclusive
+        continue-on-error: true
+        uses: ./
+        with:
+          working-directory: consumer app
+          fetcher-module: test/inconclusive.mjs
+      - name: Validate outcomes and persistent reports
+        shell: bash
+        env:
+          SAFE_STATUS: ${{ steps.protected.outputs.exit-code }}
+          UNSAFE_STATUS: ${{ steps.unsafe.outputs.exit-code }}
+          UNKNOWN_STATUS: ${{ steps.inconclusive.outputs.exit-code }}
+          UNSAFE_OUTCOME: ${{ steps.unsafe.outcome }}
+          UNKNOWN_OUTCOME: ${{ steps.inconclusive.outcome }}
+          SAFE_REPORT: ${{ steps.protected.outputs.report-path }}
+          UNSAFE_REPORT: ${{ steps.unsafe.outputs.report-path }}
+          UNKNOWN_REPORT: ${{ steps.inconclusive.outputs.report-path }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync, mkdirSync, copyFileSync } from 'node:fs';
+          const e = process.env;
+          assert.equal(e.SAFE_STATUS, '0');
+          assert.equal(e.UNSAFE_STATUS, '1');
+          assert.equal(e.UNKNOWN_STATUS, '2');
+          assert.equal(e.UNSAFE_OUTCOME, 'failure');
+          assert.equal(e.UNKNOWN_OUTCOME, 'failure');
+          const safe = JSON.parse(readFileSync(e.SAFE_REPORT));
+          const unsafe = JSON.parse(readFileSync(e.UNSAFE_REPORT));
+          assert.equal(safe.scan.blocked, 9);
+          assert.equal(safe.scan.results.reduce((n, r) => n + r.internalHits, 0), 0);
+          assert.equal(unsafe.scan.reached, 9);
+          assert.equal(JSON.parse(readFileSync(e.UNKNOWN_REPORT)).exitCode, 2);
+          mkdirSync('verification', { recursive: true });
+          for (const [name, key] of [['safe', 'SAFE_REPORT'], ['unsafe', 'UNSAFE_REPORT'], ['unknown', 'UNKNOWN_REPORT']]) {
+            copyFileSync(e[key], `verification/action-${name}.json`);
+          }
+          console.log('Verified pass, reach failure, inconclusive failure, reports and paths with spaces.');
+          JS
+      - name: Capture a real isolated walkthrough
+        if: matrix.node == '24'
+        shell: bash
+        run: |
+          sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
+            ip link set lo up
+            ip address add 93.184.216.34/32 dev lo
+            python3 scripts/record-demo.py verification/walkthrough.cast --walkthrough
+          '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          files = {p.name: p.read_text() for p in Path('verification').glob('walkthrough*')}
+          print('WALKTHROUGH_EVIDENCE=' + json.dumps(files))
+          PY
+      - name: Preserve Action verification and terminal recording
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: action-verification-node${{ matrix.node }}-${{ github.sha }}
+          path: verification/
+          if-no-files-found: warn
+          retention-days: 30
