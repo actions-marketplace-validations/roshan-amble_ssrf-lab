@@ -17,7 +17,9 @@ import time
 def main():
     dest = Path(sys.argv[1] if len(sys.argv) > 1 else 'verification/demo.cast')
     dest.parent.mkdir(parents=True, exist_ok=True)
-    command = ['node', 'scripts/demo.mjs', str(dest.with_suffix('.json'))]
+    walkthrough = '--walkthrough' in sys.argv[2:]
+    command = (['node', 'scripts/walkthrough.mjs', str(dest.with_suffix(''))] if walkthrough
+               else ['node', 'scripts/demo.mjs', str(dest.with_suffix('.json'))])
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 28, 100, 0, 0))
     started = time.monotonic()
@@ -30,7 +32,7 @@ def main():
             stream.write(json.dumps([round(time.monotonic() - started, 6), 'o', text]) + '\n')
             stream.flush()
         stream.write(json.dumps({'version': 2, 'width': 100, 'height': 28,
-            'timestamp': int(time.time()), 'title': 'ssrf-lab: measured direct-suite comparison',
+            'timestamp': int(time.time()), 'title': 'ssrf-lab: real isolated walkthrough' if walkthrough else 'ssrf-lab: measured direct-suite comparison',
             'env': {'TERM': 'xterm', 'SHELL': '/bin/bash'}}) + '\n')
         event('$ ' + ' '.join(command) + '\r\n')
         try:
