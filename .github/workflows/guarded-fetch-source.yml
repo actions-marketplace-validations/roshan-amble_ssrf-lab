@@ -1,0 +1,83 @@
+name: guarded-fetch source integration
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      # Candidate upstream contribution, built from source rather than npm.
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0
+        with:
+          repository: roshan-amble/guarded-fetch
+          ref: d584d58e61cb9e437a1e0fd9e7df2698c7c3eba7
+          path: consumer
+          persist-credentials: false
+      - uses: pnpm/action-setup@fdbc4fdcf7d143a5d0a39e9a02e103b13e309024
+        with:
+          version: '10.32.1'
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+          cache-dependency-path: consumer/pnpm-lock.yaml
+      - name: Install, build and validate the proposed consumer checkout
+        working-directory: consumer
+        run: |
+          pnpm install --frozen-lockfile --ignore-scripts
+          pnpm build
+          pnpm validate
+      - name: Run the exact Action proposed for upstream
+        id: ssrf
+        uses: roshan-amble/ssrf-lab@ac0d4906592a5c41c27785b7a4327d449bc10da9
+        with:
+          working-directory: consumer
+          fetcher-module: scripts/ssrf-lab-fetcher.mjs
+      - name: Verify and record source integration evidence
+        env:
+          REPORT_PATH: ${{ steps.ssrf.outputs.report-path }}
+        run: |
+          mkdir -p verification
+          git -C consumer rev-parse HEAD > verification/consumer-commit.txt
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync, copyFileSync } from 'node:fs';
+          const raw = readFileSync(process.env.REPORT_PATH, 'utf8');
+          const report = JSON.parse(raw);
+          assert.equal(report.mode, 'isolated-address-and-redirect');
+          assert.equal(report.exitCode, 0);
+          assert.equal(report.scan.results.length, 9);
+          assert.equal(report.scan.blocked, 9);
+          assert.equal(report.scan.reached, 0);
+          assert.equal(report.scan.results.reduce((n, row) => n + row.internalHits, 0), 0);
+          assert.equal(report.scan.positiveControl.status, 200);
+          assert.equal(report.scan.positiveControl.publicHits, 1);
+          assert.equal(report.negativeControl.reached, 2);
+          copyFileSync(process.env.REPORT_PATH, 'verification/guarded-fetch-source.json');
+          console.log('GUARDED_SOURCE_REPORT=' + JSON.stringify(report));
+          JS
+      - name: Preserve source integration evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: guarded-fetch-source-node${{ matrix.node }}-${{ github.sha }}
+          path: |
+            verification/
+            ${{ steps.ssrf.outputs.report-path }}
+            ${{ steps.ssrf.outputs.errors-path }}
+          if-no-files-found: warn
+          retention-days: 30
