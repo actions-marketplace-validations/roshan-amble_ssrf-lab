@@ -1,0 +1,28 @@
+{
+  "workflowRun": 39288662649,
+  "trialHead": "361490564f3601ee208ca75a36fde55bba4bf945",
+  "checkoutMergeRef": "6fbb7da49508866e37d4aa0c332a762b17fc0a62",
+  "consumerSource": "4ce9a53f45baf99f3a0bd00a26f82b47c7eea031",
+  "artifacts": [
+    {
+      "node": "22.23.3",
+      "id": 12204807475,
+      "jobId": 118183256501,
+      "zipSha256": "629f153426848b2cab57c425d7db361ac88208c9ecc85e87458f2605cbc115bb"
+    },
+    {
+      "node": "24.21.0",
+      "id": 12204916468,
+      "jobId": 118183257249,
+      "zipSha256": "18972cc697d50d13d22bdcabd7e39cdbd48faf02c56e4a32344c2f78c7488d61"
+    }
+  ],
+  "files": {
+    "node22-consumer-audit.json": "24f0c22d572371f7f56c8f7c9705e8db861a3390494db6b9f38247bde9d29891",
+    "node22-consumer-audit.txt": "125c277f9783175366a4e388123cd17d25600a221c9cfcf8740d37c9fe97455e",
+    "node22-linkpeek.json": "9c31583c32e0993f84e4029a49228d134e04223a1ec7111a441784030e2af361",
+    "node24-consumer-audit.json": "24f0c22d572371f7f56c8f7c9705e8db861a3390494db6b9f38247bde9d29891",
+    "node24-consumer-audit.txt": "125c277f9783175366a4e388123cd17d25600a221c9cfcf8740d37c9fe97455e",
+    "node24-linkpeek.json": "823312827f89ff1c4fe5ab83a9f0218cc1f37cb0cbb14c151d0db41677889002"
+  }
+}

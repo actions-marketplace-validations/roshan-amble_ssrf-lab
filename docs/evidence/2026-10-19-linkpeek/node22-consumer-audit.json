@@ -1,0 +1,6 @@
+{
+  "sourceCommit": "4ce9a53f45baf99f3a0bd00a26f82b47c7eea031",
+  "exitCode": 1,
+  "command": "npm run audit",
+  "gatesRequestTrial": false
+}

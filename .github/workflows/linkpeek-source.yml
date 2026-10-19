@@ -1,0 +1,102 @@
+name: linkpeek public API trial
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: thegruber/linkpeek
+          ref: 4ce9a53f45baf99f3a0bd00a26f82b47c7eea031
+          path: consumer
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            consumer/package-lock.json
+      - name: Build the harness
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+      - name: Check and build the unchanged consumer
+        working-directory: consumer
+        run: |
+          npm ci --ignore-scripts
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run docs:build
+          npm run package:check
+      - name: Record the pinned consumer's separate audit baseline
+        run: |
+          mkdir -p verification
+          set +e
+          (cd consumer && npm run audit) > verification/consumer-audit.txt 2>&1
+          audit_exit=$?
+          set -e
+          node --input-type=module - "$audit_exit" <<'JS'
+          import { writeFileSync } from 'node:fs';
+          const exitCode = Number(process.argv[2]);
+          const baseline = { sourceCommit: '4ce9a53f45baf99f3a0bd00a26f82b47c7eea031', exitCode,
+            command: 'npm run audit', gatesRequestTrial: false };
+          writeFileSync('verification/consumer-audit.json', JSON.stringify(baseline, null, 2) + '\n');
+          if (exitCode !== 0) console.log('::warning::Pinned external consumer audit failed; see consumer-audit.txt. This request trial does not certify the upstream quality gate.');
+          JS
+      - name: Verify the public preview API in an isolated network
+        run: |
+          mkdir -p verification
+          sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
+            ip link set lo up
+            ip address add 93.184.216.34/32 dev lo
+            node integrations/linkpeek/verify.mjs --module consumer/dist/index.js > verification/linkpeek.json
+          '
+      - name: Validate the measured controls
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const report = JSON.parse(readFileSync('verification/linkpeek.json', 'utf8'));
+          assert.equal(report.exitCode, 0);
+          assert.equal(report.package.sourceCommit, '4ce9a53f45baf99f3a0bd00a26f82b47c7eea031');
+          assert.equal(report.scan.results.length, 8);
+          assert.equal(report.scan.blocked, 8);
+          assert.equal(report.scan.results.reduce((n, row) => n + row.internalHits, 0), 0);
+          assert.equal(report.credentials.verdict, 'BLOCKED');
+          assert.equal(report.credentials.internalHits, 0);
+          assert.equal(report.positiveControl.status, 200);
+          assert.equal(report.positiveControl.publicHits, 1);
+          assert.equal(report.metadataControl.title, 'SSRF Lab preview control');
+          assert.equal(report.metadataControl.articleHits, 2);
+          assert.equal(report.metadataControl.redirectHits, 1);
+          assert.equal(report.negativeControl.reached, 2);
+          assert.equal(report.lateErrorControl.reached, 1);
+          assert.equal(report.lateErrorControl.results[0].internalHits, 1);
+          console.log('LINKPEEK_REPORT=' + JSON.stringify(report));
+          JS
+      - name: Preserve the measured report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: linkpeek-trial-node${{ matrix.node }}-${{ github.sha }}
+          path: verification/
+          if-no-files-found: warn
+          retention-days: 30
