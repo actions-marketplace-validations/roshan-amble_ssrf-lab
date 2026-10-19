@@ -3,8 +3,13 @@
 This finding was reproduced with [ssrf-lab](../../README.md), an MIT-licensed
 local testing harness for SSRF defenses in Node.js HTTP clients. It checks whether
 the internal service received a request, even if the client throws afterward.
-[Run the local comparison](#reproduce) or
-[test your own client](#test-your-own-client).
+[Run the local comparison](#reproduce) to reproduce this finding.
+
+**Test your application's fetcher:** start with the
+[runnable custom-fetcher example](../../examples/custom-fetcher/README.md),
+then add the [GitHub Action](../../action/README.md) to CI. The isolated check
+measures seven direct-address cases and two redirects, with independent request
+counts and successful-entry and unsafe-fetch controls.
 
 **Status:** measured on 2026-09-13. See the timeline at the end.
 **Package:** [`ssrf-agent`](https://www.npmjs.com/package/ssrf-agent) 1.0.5, the
@@ -85,20 +90,25 @@ latest published `ssrf-agent`, whose whole purpose is to stop it.
 ## Test your own client
 
 If you maintain a webhook sender, URL previewer, or another server-side fetcher,
-use the [adapter example](../../README.md#use-it-on-your-own-client) to test your
-client against the same local attack range. The independent hit counter catches
-requests that reach the internal service even when the client later reports an
-error.
+start with the [runnable custom-fetcher example](../../examples/custom-fetcher/README.md).
+Replace its application module with your existing fetch function. The independent
+hit counter catches requests that reach the internal service even when the
+client later reports an error.
 
-The [quickstart](../../README.md#quick-start) includes the three-package
-comparison and JSON output. The broader harness has 10 main SSRF/fetch-safety
-probes plus the separate seven direct-address cases.
+The [GitHub Action setup](../../action/README.md) and
+[step-by-step tutorial](../tutorials/node-fetcher-github-actions.md) show how to
+run seven direct-address cases and two redirects in an isolated Linux network
+namespace. The example requires Node.js 22.19+ or 24. It checks that an allowed
+request succeeds and an unsafe fetcher reaches the internal fixture, so a broken
+test environment cannot silently pass.
 
-**Run full scans only in a Linux network namespace with only loopback enabled**,
-following the [isolation instructions](../RELEASE_VERIFICATION.md). The adapter
-example runs a full scan. DNS rebinding is simulated, and passing these bounded
-tests does not prove complete SSRF protection. This is a testing harness, not a
-production protection library.
+The [quickstart](../../README.md#quick-start) retains the three-package comparison
+and JSON output. The broader harness has additional probes; its DNS rebinding
+test is simulated. The starter Action does not cover DNS rebinding or TLS, and
+passing its bounded cases does not prove complete SSRF protection.
+
+If these tests are useful, [star ssrf-lab](https://github.com/roshan-amble/ssrf-lab)
+to bookmark it and follow new regression cases and findings.
 
 ## Timeline
 
