@@ -37,11 +37,30 @@ jobs:
         run: |
           npm ci --ignore-scripts
           npm run build
-      - name: Run the unchanged consumer's quality gate
+      - name: Check and build the unchanged consumer
         working-directory: consumer
         run: |
           npm ci --ignore-scripts
-          npm run quality
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run docs:build
+          npm run package:check
+      - name: Record the pinned consumer's separate audit baseline
+        run: |
+          mkdir -p verification
+          set +e
+          (cd consumer && npm run audit) > verification/consumer-audit.txt 2>&1
+          audit_exit=$?
+          set -e
+          node --input-type=module - "$audit_exit" <<'JS'
+          import { writeFileSync } from 'node:fs';
+          const exitCode = Number(process.argv[2]);
+          const baseline = { sourceCommit: '4ce9a53f45baf99f3a0bd00a26f82b47c7eea031', exitCode,
+            command: 'npm run audit', gatesRequestTrial: false };
+          writeFileSync('verification/consumer-audit.json', JSON.stringify(baseline, null, 2) + '\n');
+          if (exitCode !== 0) console.log('::warning::Pinned external consumer audit failed; see consumer-audit.txt. This request trial does not certify the upstream quality gate.');
+          JS
       - name: Verify the public preview API in an isolated network
         run: |
           mkdir -p verification

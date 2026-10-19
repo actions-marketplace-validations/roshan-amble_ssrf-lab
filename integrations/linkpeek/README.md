@@ -49,7 +49,7 @@ npm ci --ignore-scripts
 npm run build
 git clone https://github.com/thegruber/linkpeek.git consumer
 git -C consumer checkout --detach 4ce9a53f45baf99f3a0bd00a26f82b47c7eea031
-(cd consumer && npm ci --ignore-scripts && npm run quality)
+(cd consumer && npm ci --ignore-scripts && npm run lint && npm run typecheck && npm test && npm run docs:build && npm run package:check)
 sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
   ip link set lo up
   ip address add 93.184.216.34/32 dev lo
@@ -59,8 +59,18 @@ sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
 
 The runner checks the package version and source commit, and verifies network
 isolation before importing the consumer. The
-[Node 22/24 workflow](../../.github/workflows/linkpeek-source.yml) runs the
-upstream quality gate first and retains the JSON report even on a failed check.
+[Node 22/24 workflow](../../.github/workflows/linkpeek-source.yml) gates the trial
+on upstream lint, type checks, tests, docs build and package checks. It retains
+the JSON report even on a failed request check.
+
+The complete upstream `npm run quality` command was also attempted on Node 22
+and 24. Its `npm run audit` stage failed on the unchanged pinned development
+dependencies; the preceding production audit reported zero vulnerabilities.
+See [the initial run](https://github.com/roshan-amble/ssrf-lab/actions/runs/39288114368).
+The trial workflow records this separate audit command, exit status and output
+as artifacts and emits a warning when it fails. Audit status does not gate
+these bounded request checks. Passing this trial is not a clean dependency
+audit or a passing upstream quality gate. No consumer dependencies are changed.
 
 For a limited local smoke check without namespace support:
 
