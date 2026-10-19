@@ -6,6 +6,11 @@ It complements that revision's fixture/mock security tests with real requests
 to counted local fixtures. It is a compatibility demonstration prepared in
 ssrf-lab, not a maintainer-run trial or evidence of adoption.
 
+[Recorded Node 22/24 evidence](../../docs/evidence/2026-10-19-linkpeek/README.md)
+shows eight address/redirect refusals plus the separate credential refusal,
+zero internal hits, successful previews and redirects, and working reach
+controls. The upstream dependency audit limitation is recorded separately.
+
 The normal calls keep the default private-address policy, redirect behavior,
 and fetch implementation. The configured five-second timeout limits test
 duration and is not credited as a security refusal.

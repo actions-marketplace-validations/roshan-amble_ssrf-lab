@@ -13,7 +13,11 @@ The [linkpeek trial](../integrations/linkpeek/README.md) exercises its unmodifie
 built public API. In the local direct-only smoke run, six address cases and
 the separate credential policy were explicitly blocked with no internal hits;
 an unsafe control reached the internal service, and the late-error control
-remained `REACHED`. Full isolated evidence is recorded separately when available.
+remained `REACHED`. The subsequent full isolated trial passed on Node 22 and 24:
+eight address/redirect refusals plus the separate credential refusal, zero
+internal hits, successful previews and redirects, and working unsafe and
+late-error controls. [Raw evidence and the separate upstream audit limitation](evidence/2026-10-19-linkpeek/README.md)
+are retained in this repository.
 
 No new vulnerability is claimed by these inspections. Contribution rules and
 scope need to be rechecked before an upstream submission; an existing linkpeek
