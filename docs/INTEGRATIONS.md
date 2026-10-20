@@ -4,6 +4,11 @@ These integrations measure specific published packages and configurations.
 A successful run is evidence for the listed probes, not a general security
 assessment or a claim that every application request path is protected.
 
+The separate [guarded-fetch source-build CI candidate](../integrations/guarded-fetch/README.md)
+tests a pinned 0.1.6 checkout through the reusable Action. It is preparation for
+an upstream contribution; it does not establish external adoption. The table
+below continues to describe the published-package comparisons.
+
 | Target | Exact version | API exercised | Scope |
 | --- | --- | --- | --- |
 | Vercel Labs guarded-fetch | 0.1.5 | `guardedFetch` with `createGuardedDispatcher` and `readBodyAsText` | Seven direct cases, five address redirects, redirect cap, three body probes |

@@ -1,0 +1,144 @@
+{
+  "environment": {
+    "node": "v22.23.3",
+    "platform": "linux",
+    "kernel": "6.17.0-1022-azure",
+    "measuredAt": "2026-10-19T15:41:49.601Z"
+  },
+  "mode": "isolated-address-and-redirect",
+  "scope": {
+    "directCases": 7,
+    "redirectCases": 2,
+    "dnsRebinding": false,
+    "tls": false,
+    "bodyLimits": false
+  },
+  "negativeControl": {
+    "client": "native fetch control",
+    "positiveControl": {
+      "status": 200,
+      "publicHits": 1
+    },
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 4,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 4,
+        "internalHits": 1,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 0,
+    "prevented": 0,
+    "reached": 2,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "scan": {
+    "client": "guarded-fetch checkout",
+    "positiveControl": {
+      "status": 200,
+      "publicHits": 1
+    },
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-decimal",
+        "title": "Decimal 2130706433",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 1,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-octal",
+        "title": "Octal 0177.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-hex",
+        "title": "Hexadecimal 0x7f.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-zero-host",
+        "title": "The unspecified address 0.0.0.0",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-ipv6-mapped",
+        "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 1,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-credentials",
+        "title": "Credentials in front of the host",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 6,
+        "internalHits": 0,
+        "publicHits": 1
+      },
+      {
+        "probeId": "redirect-decimal-loopback",
+        "title": "Redirect into loopback, written as a decimal",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 3,
+        "internalHits": 0,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 9,
+    "prevented": 0,
+    "reached": 0,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "exitCode": 0
+}

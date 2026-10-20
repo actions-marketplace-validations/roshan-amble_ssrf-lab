@@ -1,0 +1,180 @@
+{
+  "environment": {
+    "node": "v24.21.0",
+    "platform": "linux",
+    "kernel": "6.17.0-1022-azure",
+    "measuredAt": "2026-10-19T16:49:19.035Z"
+  },
+  "package": {
+    "name": "linkpeek",
+    "version": "2.1.5",
+    "sourceCommit": "4ce9a53f45baf99f3a0bd00a26f82b47c7eea031"
+  },
+  "mode": "isolated-address-and-redirect",
+  "scope": {
+    "addressCases": 8,
+    "credentialCases": 1,
+    "dnsRebinding": false,
+    "tls": false,
+    "bodyLimits": false,
+    "rawResponseBodyObservable": false
+  },
+  "configuration": {
+    "api": "preview()",
+    "privateIPsAllowed": false,
+    "injectedFetch": false,
+    "timeoutMs": 5000
+  },
+  "positiveControl": {
+    "status": 200,
+    "publicHits": 1,
+    "finalUrl": "http://93.184.216.34:45203/"
+  },
+  "metadataControl": {
+    "title": "SSRF Lab preview control",
+    "directStatus": 200,
+    "redirectedStatus": 200,
+    "articleHits": 2,
+    "redirectHits": 1
+  },
+  "negativeControl": {
+    "client": "node-fetch (global, defaults)",
+    "positiveControl": null,
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 26,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 10,
+        "internalHits": 1,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 0,
+    "prevented": 0,
+    "reached": 2,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "scan": {
+    "client": "linkpeek preview() public API",
+    "positiveControl": null,
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 1,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-decimal",
+        "title": "Decimal 2130706433",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-octal",
+        "title": "Octal 0177.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-hex",
+        "title": "Hexadecimal 0x7f.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-zero-host",
+        "title": "The unspecified address 0.0.0.0",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-ipv6-mapped",
+        "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 1,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 1,
+        "internalHits": 0,
+        "publicHits": 1
+      },
+      {
+        "probeId": "redirect-decimal-loopback",
+        "title": "Redirect into loopback, written as a decimal",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: linkpeek PRIVATE_NETWORK_BLOCKED",
+        "durationMs": 3,
+        "internalHits": 0,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 8,
+    "prevented": 0,
+    "reached": 0,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "credentials": {
+    "probeId": "direct-credentials",
+    "control": "credentials-not-allowed",
+    "verdict": "BLOCKED",
+    "internalHits": 0,
+    "errorCode": "INVALID_URL"
+  },
+  "lateErrorControl": {
+    "client": "linkpeek opt-out, then client error",
+    "positiveControl": null,
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request before the client reported an error",
+        "durationMs": 1,
+        "internalHits": 1,
+        "publicHits": 0
+      }
+    ],
+    "blocked": 0,
+    "prevented": 0,
+    "reached": 1,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "exitCode": 0
+}
