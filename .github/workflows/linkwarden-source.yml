@@ -1,0 +1,82 @@
+name: Linkwarden application fetch trial
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  safe-fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: linkwarden/linkwarden
+          ref: 952ac4540657cae3a67c3ca59433899d2fda8374
+          path: consumer
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            integrations/linkwarden/package-lock.json
+      - name: Build the harness and pinned application modules
+        run: |
+          mkdir -p verification
+          npm ci --ignore-scripts
+          npm ci --ignore-scripts --prefix integrations/linkwarden
+          npm run build
+          node integrations/linkwarden/build-source.mjs consumer > verification/source.json
+          npm audit --omit=dev --audit-level=low --json --prefix integrations/linkwarden > verification/transport-audit.json
+      - name: Measure the application with no external networking
+        run: |
+          sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
+            ip link set lo up
+            ip address add 93.184.216.34/32 dev lo
+            ip -j address show > verification/network.json
+            ip -j route show table all > verification/routes.json
+            node integrations/linkwarden/verify.mjs > verification/linkwarden.json
+          '
+      - name: Validate the application controls and report
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const r = JSON.parse(readFileSync('verification/linkwarden.json', 'utf8'));
+          assert.equal(r.exitCode, 0);
+          assert.equal(r.application.sourceCommit, '952ac4540657cae3a67c3ca59433899d2fda8374');
+          assert.equal(r.scan.results.length, 9);
+          assert.equal(r.scan.blocked, 9);
+          assert(r.scan.results.every(row => row.internalHits === 0));
+          assert(r.scan.results.filter(row => row.probeId.startsWith('redirect-')).every(row => row.publicHits === 1));
+          assert.equal(r.scan.positiveControl.status, 200);
+          assert.equal(r.allowedRedirect.bodyMatches, true);
+          assert.equal(r.allowedRedirect.contentHits, 2);
+          assert.equal(r.allowedRedirect.redirectHits, 1);
+          assert.equal(r.nativeControl.reached, 2);
+          assert.equal(r.applicationControl.reached, 2);
+          assert.equal(r.lateErrorControl.reached, 1);
+          assert.equal(r.lateErrorControl.results[0].internalHits, 1);
+          console.log('9 explicit refusals, zero internal hits, allowed redirect passed, native and application opt-out controls reached.');
+          JS
+      - name: Retain the measured evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: linkwarden-trial-node${{ matrix.node }}-${{ github.sha }}
+          path: verification/
+          if-no-files-found: warn
+          retention-days: 30
