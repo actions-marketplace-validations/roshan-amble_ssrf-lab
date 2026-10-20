@@ -1,0 +1,10 @@
+{
+  "name": "ssrf-lab-linkwarden-trial",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "https-proxy-agent": "7.0.6",
+    "node-fetch": "2.7.0",
+    "socks-proxy-agent": "8.0.2"
+  }
+}
