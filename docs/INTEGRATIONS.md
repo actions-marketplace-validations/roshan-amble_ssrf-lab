@@ -4,6 +4,13 @@ These integrations measure specific published packages and configurations.
 A successful run is evidence for the listed probes, not a general security
 assessment or a claim that every application request path is protected.
 
+The [Linkwarden application-source trial](../integrations/linkwarden/README.md)
+calls its shared `safeFetch()` and guard from a pinned checkout, using the same
+address policy and redirect implementation. Recorded Node 22/24 runs blocked
+nine selected cases with zero internal hits and working allowed/unsafe controls.
+It does not boot the application or test its browser/archive jobs, and is not
+evidence of external adoption.
+
 The separate [guarded-fetch source-build CI candidate](../integrations/guarded-fetch/README.md)
 tests a pinned 0.1.6 checkout through the reusable Action. It is preparation for
 an upstream contribution; it does not establish external adoption. The table

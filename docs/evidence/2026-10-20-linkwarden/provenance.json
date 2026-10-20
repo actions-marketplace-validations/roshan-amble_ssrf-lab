@@ -1,0 +1,68 @@
+{
+  "sourceCommit": "952ac4540657cae3a67c3ca59433899d2fda8374",
+  "verificationHead": "c03503d4857cafdb5002481f9247ff782fe59014",
+  "mergeRef": "82a2fdd0005d7787852b8a4bdeb9c06f33bee316",
+  "runId": 39507487611,
+  "runUrl": "https://github.com/roshan-amble/ssrf-lab/actions/runs/39507487611",
+  "artifacts": [
+    {
+      "id": 12304167265,
+      "name": "linkwarden-trial-node24-82a2fdd0005d7787852b8a4bdeb9c06f33bee316",
+      "zipSha256": "c03a81c67eaca3b1a180c5324b93c794199e08b079c807ee10db4f0eb8b4d49b",
+      "files": {
+        "node24-report.json": {
+          "artifactPath": "linkwarden.json",
+          "sha256": "57d9ef9bc2b4b47c2b4e108e096913fada47b66ab5e382925350c13311f06602"
+        },
+        "node24-routes.json": {
+          "artifactPath": "routes.json",
+          "sha256": "364ec7f339604d0f525edda3fe7805860352e49c5cd88e8c63fa70ca5275cf9e"
+        },
+        "node24-network.json": {
+          "artifactPath": "network.json",
+          "sha256": "4aca686df8efbf9fdfda319410e42d6b5289bfc770fe56b101046fb1222a4d02"
+        },
+        "node24-source.json": {
+          "artifactPath": "source.json",
+          "sha256": "ca10db544c77b93240d62cb3aa4e27ff1aa847495b48fa069652547c0d094392"
+        },
+        "node24-transport-audit.json": {
+          "artifactPath": "transport-audit.json",
+          "sha256": "5be49545351ee19753ad544b78bf3703e24c4928d0b1dc0d3fdd925ebc3c5af4"
+        }
+      }
+    },
+    {
+      "id": 12304042401,
+      "name": "linkwarden-trial-node22-82a2fdd0005d7787852b8a4bdeb9c06f33bee316",
+      "zipSha256": "8f3e55a5ebd7d3446c9ca60f2330999808ace470a6075bd0cd26433df3afbfd5",
+      "files": {
+        "node22-report.json": {
+          "artifactPath": "linkwarden.json",
+          "sha256": "c9d28557e016c5f0841cfd9e7f38beccca474c636183a102a3ed7685aec507bd"
+        },
+        "node22-network.json": {
+          "artifactPath": "network.json",
+          "sha256": "4aca686df8efbf9fdfda319410e42d6b5289bfc770fe56b101046fb1222a4d02"
+        },
+        "node22-routes.json": {
+          "artifactPath": "routes.json",
+          "sha256": "364ec7f339604d0f525edda3fe7805860352e49c5cd88e8c63fa70ca5275cf9e"
+        },
+        "node22-source.json": {
+          "artifactPath": "source.json",
+          "sha256": "ca10db544c77b93240d62cb3aa4e27ff1aa847495b48fa069652547c0d094392"
+        },
+        "node22-transport-audit.json": {
+          "artifactPath": "transport-audit.json",
+          "sha256": "5be49545351ee19753ad544b78bf3703e24c4928d0b1dc0d3fdd925ebc3c5af4"
+        }
+      }
+    }
+  ],
+  "localSmoke": {
+    "file": "node24-local-smoke.json",
+    "sha256": "60df48872279dbccde28799c2ae2f321aa784d3855c07b946ea886a6cd2fed0b",
+    "scope": "Seven direct cases only, local runtime v24.19.0"
+  }
+}
