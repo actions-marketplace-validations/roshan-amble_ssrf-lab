@@ -77,9 +77,12 @@ reach. Exit 2 means setup, controls or coverage were inconclusive. The full CI
 run retains raw reports, source/build hashes, network inventory and the separate
 transport dependency audit, including when a job fails.
 
-Local Node 24.19.0 verification passed seven direct cases, the application
-opt-out reach control and the late-error counter control. Isolated Node 22/24
-results are pending.
+[Recorded Node 22.23.3 and 24.21.0 evidence](../../docs/evidence/2026-10-20-linkwarden/README.md)
+passed all nine address/redirect cases with zero internal hits. Both runtimes
+completed the allowed entry/content/redirect controls, measured two reaches
+through native fetch and two through the application's opt-out, and detected
+the late-error reach. Local Node 24.19.0 separately passed the seven direct
+cases and controls. The evidence retains the raw JSON and verified ZIP digests.
 
 ## Scope and status
 

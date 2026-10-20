@@ -25,18 +25,21 @@ an allowed request succeeds. The example requires Node.js 22.19+.
 · [48-second recorded execution](docs/media/ssrf-lab-walkthrough.mp4)
 ([raw recording and reports](docs/evidence/2026-10-16-action/README.md)).
 
-**Recorded source-build trials on Node 22 and 24:**
+**Recorded library and application-source trials on Node 22 and 24:**
 
 | Client | Reproduce and inspect | Measured result |
 | --- | --- | --- |
 | Vercel Labs' `guarded-fetch` 0.1.6 candidate build | [CI recipe](integrations/guarded-fetch/README.md) · [Raw reports](docs/evidence/2026-10-19-guarded-fetch-source/README.md) | 9 explicit refusals; 0 internal hits |
 | `linkpeek` 2.1.5 public `preview()` API | [Trial recipe](integrations/linkpeek/README.md) · [Raw reports](docs/evidence/2026-10-19-linkpeek/README.md) | 8 address/redirect refusals + separate credential rejection; 0 internal hits |
+| Linkwarden's shared `safeFetch()` at `952ac45` | [Application fetch recipe](integrations/linkwarden/README.md) · [Raw reports](docs/evidence/2026-10-20-linkwarden/README.md) | 9 explicit refusals; 0 internal hits |
 
-Both trials require successful allowed requests and working unsafe controls.
+All three trials require successful allowed requests and working unsafe controls.
 These are tests prepared and run for ssrf-lab, not evidence of maintainer
 adoption: the [guarded-fetch PR](https://github.com/vercel-labs/guarded-fetch/pull/12)
 and [linkpeek trial discussion](https://github.com/thegruber/linkpeek/discussions/39#discussioncomment-19046880)
-await maintainer feedback. DNS rebinding and TLS are outside these trials;
+await maintainer feedback. The Linkwarden trial is prepared for review and has
+not been proposed upstream; its coverage is limited to the shared fetch function.
+DNS rebinding and TLS are outside these trials;
 linkpeek's separate development-dependency audit failure is recorded with its
 evidence.
 

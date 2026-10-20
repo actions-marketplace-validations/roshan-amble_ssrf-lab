@@ -77,6 +77,13 @@ node integrations/n8n/check-audit.mjs verification/n8n-audit.json
 
 ## Isolation
 
+The optional [Linkwarden source trial](../integrations/linkwarden/README.md)
+uses another separate npm lockfile. Its three direct transport dependency
+versions match the pinned application's Yarn lock; the rest of the application
+dependency graph is not installed. The recorded 2026-10-20 Node 22/24 transport
+audits reported zero advisories and are retained with the request evidence.
+The workflow fails on any advisory instead of introducing an audit exception.
+
 CI installs dependencies before creating a network namespace, then runs the tests,
 scans, and demonstration with only loopback enabled. There is no fallback to an
 unrestricted network. The verification workflow has only repository read access;

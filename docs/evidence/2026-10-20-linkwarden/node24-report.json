@@ -1,0 +1,241 @@
+{
+  "environment": {
+    "node": "v24.21.0",
+    "platform": "linux",
+    "kernel": "6.17.0-1022-azure",
+    "measuredAt": "2026-10-20T22:21:35.537Z"
+  },
+  "application": {
+    "repository": "linkwarden/linkwarden",
+    "sourceCommit": "952ac4540657cae3a67c3ca59433899d2fda8374",
+    "applicationVersion": "v2.16.3",
+    "api": "packages/lib/safeFetch.ts safeFetch()",
+    "sourceFiles": {
+      "safeFetch.js": {
+        "gitBlob": "fc659a0dabbce782b4c93b62ef9208f0a10fbd0c",
+        "sourceSha256": "b643549188f8148de6e4c4f871736363d5a4f33f9f01c6c6a7b9cf9807f37f82",
+        "emittedSha256": "3e3695d5ae331fb697357dd99b59c18989af71f062afe4bba5f8fbd4d710cfc0"
+      },
+      "ssrf.js": {
+        "gitBlob": "a27013b39dcafe39b2cbe2ebc17be3d5b48729f8",
+        "sourceSha256": "86b89aaf58b6657390785c4863ef04bec25443cf6d5dc570dbd125c4e1d91d59",
+        "emittedSha256": "074ca37a700814e313c7aae0db50b59f0fbafff9614fab746bae6d72a56eec07"
+      }
+    },
+    "typescript": "5.9.3",
+    "transportDependencies": {
+      "https-proxy-agent": "7.0.6",
+      "node-fetch": "2.7.0",
+      "socks-proxy-agent": "8.0.2"
+    },
+    "upstreamLockSha256": "c663419441d8b2bb987239ba2495e6995264fe5dc047fc49a3145dfe6967d782",
+    "trialLockSha256": "5b295014141337f8865a24df10e8624b588acc692b0c34615d0ec4054643025f",
+    "build": "TypeScript type erasure and workspace import resolution; no policy or transport replacements",
+    "scope": "Two unchanged application modules with an isolated dependency installation, not a full application build"
+  },
+  "mode": "isolated-address-and-redirect",
+  "configuration": {
+    "api": "safeFetch()",
+    "privateNetworkAccess": false,
+    "proxy": false,
+    "replacedResolver": false,
+    "replacedFetch": false,
+    "timeoutMs": 5000
+  },
+  "scope": {
+    "addressCases": 9,
+    "dnsRebinding": false,
+    "tls": false,
+    "proxy": false,
+    "bodyLimits": false,
+    "fullApplicationBoot": false,
+    "browserWorker": false
+  },
+  "nativeControl": {
+    "client": "node-fetch (global, defaults)",
+    "positiveControl": {
+      "status": 200,
+      "publicHits": 1
+    },
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 4,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 3,
+        "internalHits": 1,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 0,
+    "prevented": 0,
+    "reached": 2,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "applicationControl": {
+    "client": "Linkwarden opt-out control",
+    "positiveControl": {
+      "status": 200,
+      "publicHits": 1
+    },
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 2,
+        "internalHits": 1,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request, independent of the returned body",
+        "durationMs": 3,
+        "internalHits": 1,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 0,
+    "prevented": 0,
+    "reached": 2,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "allowedRedirect": {
+    "directStatus": 200,
+    "redirectedStatus": 200,
+    "contentHits": 2,
+    "redirectHits": 1,
+    "bodyMatches": true
+  },
+  "lateErrorControl": {
+    "client": "Linkwarden opt-out, then policy error",
+    "positiveControl": null,
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "REACHED",
+        "note": "the internal service recorded a request before the client reported an error",
+        "durationMs": 2,
+        "internalHits": 1,
+        "publicHits": 0
+      }
+    ],
+    "blocked": 0,
+    "prevented": 0,
+    "reached": 1,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "scan": {
+    "client": "Linkwarden application safeFetch()",
+    "positiveControl": {
+      "status": 200,
+      "publicHits": 1
+    },
+    "results": [
+      {
+        "probeId": "direct-dotted",
+        "title": "Plain 127.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-decimal",
+        "title": "Decimal 2130706433",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-octal",
+        "title": "Octal 0177.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 1,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-hex",
+        "title": "Hexadecimal 0x7f.0.0.1",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-zero-host",
+        "title": "The unspecified address 0.0.0.0",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-ipv6-mapped",
+        "title": "IPv4-mapped IPv6 [::ffff:127.0.0.1]",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "direct-credentials",
+        "title": "Credentials in front of the host",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 0,
+        "internalHits": 0,
+        "publicHits": 0
+      },
+      {
+        "probeId": "redirect-loopback",
+        "title": "Redirect into loopback",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 6,
+        "internalHits": 0,
+        "publicHits": 1
+      },
+      {
+        "probeId": "redirect-decimal-loopback",
+        "title": "Redirect into loopback, written as a decimal",
+        "verdict": "BLOCKED",
+        "note": "forbidden-address: the application reported an explicit address-policy refusal",
+        "durationMs": 2,
+        "internalHits": 0,
+        "publicHits": 1
+      }
+    ],
+    "blocked": 9,
+    "prevented": 0,
+    "reached": 0,
+    "lucky": 0,
+    "notApplicable": 0
+  },
+  "exitCode": 0
+}
