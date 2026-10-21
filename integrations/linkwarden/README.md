@@ -93,7 +93,9 @@ limits or credential forwarding. Its five-second deadline is a harness limit,
 not a claim about application timeout policy.
 
 The target source remains in its own AGPL-3.0 repository; generated modules are
-ignored build output and are not vendored here. This is a prepared trial, not
-an upstream submission, maintainer acceptance or external adoption of ssrf-lab.
+ignored build output and are not vendored here. The trial supports
+[Linkwarden's test-coverage proposal #1869](https://github.com/linkwarden/linkwarden/issues/1869),
+which awaits maintainer feedback. It does not establish maintainer acceptance
+or external adoption of ssrf-lab.
 
 Codex assisted with implementation, testing and documentation.

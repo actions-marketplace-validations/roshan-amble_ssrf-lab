@@ -15,6 +15,12 @@ If the internal service saw the request, a later error cannot make it `BLOCKED`.
 
 **10 main SSRF/fetch-safety probes · 7 separate direct-address cases · MIT · Node.js 22.12+**
 
+**Try it in your GitHub account:** [Create a repository from the starter](https://github.com/roshan-amble/ssrf-lab-starter/generate),
+then run its included Node 22/24 workflow from Actions. The working sample
+requires no local install or secrets. Replace `fetcher.mjs` to test your code;
+[recorded passing and failing runs](https://github.com/roshan-amble/ssrf-lab-starter/tree/main/verification)
+show what to expect.
+
 **[Test your own fetcher](examples/custom-fetcher/README.md)** with a complete
 application module, a deliberately unsafe control, and a copyable isolated CI
 workflow. Start with seven local cases; CI adds two redirects and verifies that
@@ -37,8 +43,9 @@ All three trials require successful allowed requests and working unsafe controls
 These are tests prepared and run for ssrf-lab, not evidence of maintainer
 adoption: the [guarded-fetch PR](https://github.com/vercel-labs/guarded-fetch/pull/12)
 and [linkpeek trial discussion](https://github.com/thegruber/linkpeek/discussions/39#discussioncomment-19046880)
-await maintainer feedback. The Linkwarden trial is prepared for review and has
-not been proposed upstream; its coverage is limited to the shared fetch function.
+await maintainer feedback. The Linkwarden trial supports an
+[upstream test-coverage proposal](https://github.com/linkwarden/linkwarden/issues/1869),
+also awaiting feedback; its coverage is limited to the shared fetch function.
 DNS rebinding and TLS are outside these trials;
 linkpeek's separate development-dependency audit failure is recorded with its
 evidence.
