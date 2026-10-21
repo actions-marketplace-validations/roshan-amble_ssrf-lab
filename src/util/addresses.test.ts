@@ -22,6 +22,16 @@ describe('classifyAddress', () => {
     ['fd00::1', 'unique-local'],
     ['ff02::1', 'multicast'],
     ['2606:4700:4700::1111', 'public'],
+    ['198.51.100.1', 'private'],
+    ['240.0.0.1', 'private'],
+    ['8.8.8.8', 'public'],
+    ['fe80::1%eth0', 'link-local'],
+    ['2001:db8::1', 'private'],
+    ['2001::1', 'private'],
+    ['100::1', 'private'],
+    ['64:ff9b:1::1', 'private'],
+    ['fec0::1', 'private'],
+    ['2a00:1450:4001:80b::200e', 'public'],
   ]
 
   for (const [address, expected] of cases) {
@@ -34,6 +44,25 @@ describe('classifyAddress', () => {
     expect(classifyAddress('::ffff:127.0.0.1')).toBe('loopback')
     expect(classifyAddress('::ffff:7f00:1')).toBe('loopback')
     expect(classifyAddress('::ffff:10.0.0.1')).toBe('private')
+  })
+
+  it('classifies the parsed address, not the text, whatever the IPv6 spelling', () => {
+    // The fully written-out ::ffff:127.0.0.1. A pattern on the text misses it,
+    // which is the ssrf-agent finding in this repository's own classifier.
+    expect(classifyAddress('0:0:0:0:0:ffff:7f00:1')).toBe('loopback')
+    expect(classifyAddress('0000:0000:0000:0000:0000:FFFF:7F00:0001')).toBe('loopback')
+    expect(classifyAddress('::FFFF:127.0.0.1')).toBe('loopback')
+    expect(classifyAddress('0:0:0:0:0:0:0:1')).toBe('loopback')
+  })
+
+  it('judges an IPv6 address that carries an IPv4 address by that IPv4 address', () => {
+    expect(classifyAddress('::ffff:0:7f00:1')).toBe('loopback') // IPv4-translated
+    expect(classifyAddress('::7f00:1')).toBe('loopback') // IPv4-compatible
+    expect(classifyAddress('::127.0.0.1')).toBe('loopback')
+    expect(classifyAddress('64:ff9b::7f00:1')).toBe('loopback') // NAT64
+    expect(classifyAddress('64:ff9b::a9fe:a9fe')).toBe('link-local')
+    expect(classifyAddress('2002:7f00:1::')).toBe('loopback') // 6to4
+    expect(classifyAddress('64:ff9b::5db8:d822')).toBe('public') // NAT64 of 93.184.216.34
   })
 
   it('refuses a hostname, because a name has no class until it resolves', () => {
