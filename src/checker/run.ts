@@ -1,3 +1,4 @@
+import { MissingOptionalPackage } from '../adapters/optional.js'
 import { PolicyRefusal, type HttpClient } from '../adapters/types.js'
 import type { AttackRange } from '../range/server.js'
 import { PROBES, type Probe } from './probes.js'
@@ -97,6 +98,10 @@ async function runProbe(client: HttpClient, range: AttackRange, probe: Probe): P
     }
     return finish('LUCKY', `no refusal; status ${outcome.status}, ${outcome.bytesRead} bytes`)
   } catch (error) {
+    // A client whose package is not installed never ran. Reporting that as
+    // LUCKY or PREVENTED would score a request that was never made.
+    if (error instanceof MissingOptionalPackage && !hitInternal()) throw error
+
     // A late body cap, timeout, or network error cannot undo an internal hit.
     // Independent server-side evidence takes priority over a client's claim.
     if (hitInternal()) {

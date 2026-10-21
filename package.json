@@ -1,17 +1,31 @@
 {
   "name": "ssrf-lab",
   "version": "0.1.0",
-  "description": "A local attack range and conformance checker for SSRF and fetch-safety defenses in HTTP clients.",
+  "description": "Test whether your Node.js fetcher actually blocks SSRF or just got lucky: a local attack range with an independent hit counter, for CI.",
   "keywords": [
     "ssrf",
     "security",
     "dns-rebinding",
     "zip-bomb",
     "http-client",
-    "testing"
+    "testing",
+    "ssrf-protection",
+    "security-testing",
+    "appsec",
+    "webhook",
+    "link-preview",
+    "github-actions"
   ],
   "license": "MIT",
   "author": "Roshan Amble",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roshan-amble/ssrf-lab.git"
+  },
+  "homepage": "https://github.com/roshan-amble/ssrf-lab#readme",
+  "bugs": {
+    "url": "https://github.com/roshan-amble/ssrf-lab/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=22.12.0"
@@ -22,13 +36,15 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.*"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "scan": "tsx src/cli.ts"
+    "scan": "tsx src/cli.ts",
+    "prepack": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && npm run build"
   },
   "devDependencies": {
     "@types/node": "22.20.2",
