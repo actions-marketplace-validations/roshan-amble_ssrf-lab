@@ -8,6 +8,8 @@ The [Linkwarden application-source trial](../integrations/linkwarden/README.md)
 calls its shared `safeFetch()` and guard from a pinned checkout, using the same
 address policy and redirect implementation. Recorded Node 22/24 runs blocked
 nine selected cases with zero internal hits and working allowed/unsafe controls.
+The [upstream test-coverage proposal](https://github.com/linkwarden/linkwarden/issues/1869)
+awaits maintainer feedback.
 It does not boot the application or test its browser/archive jobs, and is not
 evidence of external adoption.
 
