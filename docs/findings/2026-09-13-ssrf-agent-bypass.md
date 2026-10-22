@@ -35,6 +35,11 @@ spellings are allowed through, and the service answers.
 "Reached" is not inferred from an error. The internal service returns a canary
 string and counts its requests, so a hit is positive evidence.
 
+The mapped IPv6 result depends on the host. On a Linux host without IPv6, that
+connection fails with `EAFNOSUPPORT`, and ssrf-lab reports `PREVENTED`, not
+`BLOCKED`: nothing refused it, and nothing arrived. `0.0.0.0` still reaches
+the internal service there.
+
 ## Reproduce
 
 Requires Node.js 22.12 or later. This command runs only the local direct-address

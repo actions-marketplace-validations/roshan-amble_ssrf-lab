@@ -2,88 +2,88 @@
 
 **A failed HTTP request is not proof that your SSRF defense worked.**
 
-Test the Node.js fetcher behind your link previews, URL imports or webhook
-destinations. Catch regressions that reach an internal service in CI before
-they ship.
-
-`ssrf-lab` is a local attack range and conformance checker for Node.js HTTP
-clients. It distinguishes an explicit security refusal from a request that
-failed for an unrelated reason, using a canary and an independent hit counter.
-If the internal service saw the request, a later error cannot make it `BLOCKED`.
+ssrf-lab tests the Node.js fetcher behind your link previews, URL imports and
+webhook destinations. It tells an explicit refusal apart from a request that
+failed for some other reason, using a canary and an independent hit counter on a
+separate internal service. If that service saw the request, a later error cannot
+make the result `BLOCKED`.
 
 ![ci](https://github.com/roshan-amble/ssrf-lab/actions/workflows/ci.yml/badge.svg)
 
+On the cloud-metadata probe below, both clients' requests failed. Only one of
+those failures was a defense:
+
+```
+node-fetch (global, defaults)
+  [!] REACHED    Redirect into loopback                        the internal service recorded a request, independent of the returned body
+  [~] LUCKY      Redirect into cloud metadata                  no policy; the request failed with fetch failed <- ENETUNREACH
+
+guarded client (this repo)
+  [+] BLOCKED    Redirect into loopback                        forbidden-address: 127.0.0.1 is loopback
+  [+] BLOCKED    Redirect into cloud metadata                  forbidden-address: 169.254.169.254 is link-local
+```
+
+`LUCKY` means nothing refused the request; something else failed first. On a
+network where the metadata endpoint is reachable, that request lands.
+Excerpt from the [full run](#measured-output).
+
 **10 main SSRF/fetch-safety probes · 7 separate direct-address cases · MIT · Node.js 22.12+**
 
-**Try it in your GitHub account:** [Create a repository from the starter](https://github.com/roshan-amble/ssrf-lab-starter/generate),
-then run its included Node 22/24 workflow from Actions. The working sample
-requires no local install or secrets. Replace `fetcher.mjs` to test your code;
-[recorded passing and failing runs](https://github.com/roshan-amble/ssrf-lab-starter/tree/main/verification)
-show what to expect.
+## Try it
 
-**[Test your own fetcher](examples/custom-fetcher/README.md)** with a complete
-application module, a deliberately unsafe control, and a copyable isolated CI
-workflow. Start with seven local cases; CI adds two redirects and verifies that
-an allowed request succeeds. The example requires Node.js 22.19+.
+| You want to | Start here |
+| --- | --- |
+| See it work, with no local install or secrets | [Create a repository from the starter](https://github.com/roshan-amble/ssrf-lab-starter/generate) and run its Node 22/24 workflow from Actions ([recorded passing and failing runs](https://github.com/roshan-amble/ssrf-lab-starter/tree/main/verification)) |
+| Test your own fetcher | The [custom-fetcher example](examples/custom-fetcher/README.md): an application module, a deliberately unsafe control and a copyable isolated CI workflow (Node.js 22.19+) |
+| Catch regressions in CI | The [reusable GitHub Action](action/README.md) · [step-by-step tutorial](docs/tutorials/node-fetcher-github-actions.md) · [48-second recording](docs/media/ssrf-lab-walkthrough.mp4) ([raw recording and reports](docs/evidence/2026-10-16-action/README.md)) |
+| Run it locally | The [quick start](#quick-start) below |
 
-**New:** [Step-by-step CI tutorial](docs/tutorials/node-fetcher-github-actions.md)
-· [Reusable GitHub Action](action/README.md)
-· [48-second recorded execution](docs/media/ssrf-lab-walkthrough.mp4)
-([raw recording and reports](docs/evidence/2026-10-16-action/README.md)).
+## What it found
 
-**Recorded library and application-source trials on Node 22 and 24:**
+- **`ssrf-agent` 1.0.5**, the latest release of a package whose stated purpose is
+  to prevent SSRF, lets `0.0.0.0` reach loopback, and on macOS also
+  `[::ffff:127.0.0.1]`. See the [finding, root cause and disclosure timeline](docs/findings/2026-09-13-ssrf-agent-bypass.md).
+- **`@tak-ps/node-safeurl`** has a reproduced redirect-conformance bug, with a
+  [tested fix](patches/node-safeurl/README.md) submitted as
+  [PR #4](https://github.com/dfpc-coe/node-safeurl/pull/4).
+- Recorded trials of [guarded-fetch, linkpeek and Linkwarden](#tested-against)
+  on Node 22 and 24.
 
-| Client | Reproduce and inspect | Measured result |
-| --- | --- | --- |
-| Vercel Labs' `guarded-fetch` 0.1.6 candidate build | [CI recipe](integrations/guarded-fetch/README.md) · [Raw reports](docs/evidence/2026-10-19-guarded-fetch-source/README.md) | 9 explicit refusals; 0 internal hits |
-| `linkpeek` 2.1.5 public `preview()` API | [Trial recipe](integrations/linkpeek/README.md) · [Raw reports](docs/evidence/2026-10-19-linkpeek/README.md) | 8 address/redirect refusals + separate credential rejection; 0 internal hits |
-| Linkwarden's shared `safeFetch()` at `952ac45` | [Application fetch recipe](integrations/linkwarden/README.md) · [Raw reports](docs/evidence/2026-10-20-linkwarden/README.md) | 9 explicit refusals; 0 internal hits |
+## Quick start
 
-All three trials require successful allowed requests and working unsafe controls.
-These are tests prepared and run for ssrf-lab, not evidence of maintainer
-adoption: the [guarded-fetch PR](https://github.com/vercel-labs/guarded-fetch/pull/12)
-and [linkpeek trial discussion](https://github.com/thegruber/linkpeek/discussions/39#discussioncomment-19046880)
-await maintainer feedback. The Linkwarden trial supports an
-[upstream test-coverage proposal](https://github.com/linkwarden/linkwarden/issues/1869),
-also awaiting feedback; its coverage is limited to the shared fetch function.
-DNS rebinding and TLS are outside these trials;
-linkpeek's separate development-dependency audit failure is recorded with its
-evidence.
-
-[Additional pinned comparisons](docs/INTEGRATIONS.md) cover n8n's outbound
-networking component and three other fetch wrappers.
-A reproduced redirect-conformance bug has a tested fix submitted as
-[node-safeurl PR #4](https://github.com/dfpc-coe/node-safeurl/pull/4), awaiting
-review. These are bounded tests of the named versions, not endorsements or
-coverage of entire applications.
-
-**Recorded results: seven local address cases, three pinned packages.**
-
-[![Static screenshot of the recorded Node 22 results: the internal service counted 0, 0, and 2 hits for the three pinned packages.](docs/media/ssrf-lab-results.png)](docs/evidence/2026-10-12-7f8f15f/README.md)
-
-Actual output from isolated CI at [`7f8f15f`](https://github.com/roshan-amble/ssrf-lab/commit/7f8f15f4f3f068c40e3f3c2a0f69a02eff67f684).
-[Read the terminal output](docs/evidence/2026-10-12-7f8f15f/node22/demo.txt)
-· [Inspect the evidence and original recording](docs/evidence/2026-10-12-7f8f15f/README.md)
-
-Start with the direct-address comparison: the same local target, three packages
-that advertise SSRF protection. No accounts, API keys, or external targets are
-needed for this suite.
+The direct suite needs no accounts, API keys or external targets. It sends
+requests at the lab's own internal service through three npm packages that
+advertise SSRF protection.
 
 ```bash
 git clone https://github.com/roshan-amble/ssrf-lab.git
 cd ssrf-lab
 npm ci
 npm run build
-node dist/cli.js scan --client libs --suite direct
+node dist/cli.js scan --client libs --suite direct          # add --json for machine-readable output
 ```
 
-The direct suite targets the lab's internal service using local address forms.
-Use an authorized disposable environment; `0.0.0.0` and IPv4-mapped IPv6 behavior
-can vary by operating system. The **full redirect suite also attempts non-loopback
-addresses**. Run it only with network isolation, as described below.
+Use an authorized disposable environment; `0.0.0.0` and IPv4-mapped IPv6
+behavior can vary by operating system. **The redirect suite also attempts
+non-loopback addresses. Run the commands below only with network isolation:**
 
-[Read the published package finding](docs/findings/2026-09-13-ssrf-agent-bypass.md)
-· [Verify a release and inspect real CI output](docs/RELEASE_VERIFICATION.md)
+```bash
+# All 10 main probes against the 3 built-in clients
+node dist/cli.js scan --client all
+
+# Both suites, nonzero exit on REACHED
+node dist/cli.js scan --client guarded --suite all --fail-on-reach
+```
+
+`--fail-on-reach` exits 1 for an observed `REACHED`. It does not require every
+other result to be `BLOCKED` and is not a security certification.
+
+For the full tests and redirect scans, CI uses a fresh Linux network namespace
+with only loopback enabled. This prevents deliberately unsafe clients from
+contacting real metadata services or other networks. See
+[release verification](docs/RELEASE_VERIFICATION.md) and the
+[workflow](.github/workflows/ci.yml) for the exact commands and saved logs.
+The package is not published on npm yet, so these instructions build from a clone.
 
 ## What it is
 
@@ -115,33 +115,24 @@ Two servers, not one, because a single origin cannot tell a control from an
 accident: the client is **allowed** to fetch the public range, so anything that
 arrives at the internal service arrived by attack.
 
-## Quick start
+## Tested against
 
-After the clean install and build above, these are the compiled CLI commands:
+Recorded library and application-source trials on Node 22 and 24. Each trial
+requires a successful allowed request and a working unsafe control.
 
-```bash
-# Local direct-address comparison (the introductory demo)
-node dist/cli.js scan --client libs --suite direct
+| Client | Reproduce and inspect | Measured result |
+| --- | --- | --- |
+| Vercel Labs' `guarded-fetch` 0.1.6 candidate build | [CI recipe](integrations/guarded-fetch/README.md) · [Raw reports](docs/evidence/2026-10-19-guarded-fetch-source/README.md) | 9 explicit refusals; 0 internal hits |
+| `linkpeek` 2.1.5 public `preview()` API | [Trial recipe](integrations/linkpeek/README.md) · [Raw reports](docs/evidence/2026-10-19-linkpeek/README.md) | 8 address/redirect refusals + separate credential rejection; 0 internal hits |
+| Linkwarden's shared `safeFetch()` at `952ac45` | [Application fetch recipe](integrations/linkwarden/README.md) · [Raw reports](docs/evidence/2026-10-20-linkwarden/README.md) | 9 explicit refusals; 0 internal hits |
 
-# Machine-readable results from the same suite
-node dist/cli.js scan --client libs --suite direct --json
-
-# In a network-isolated environment only: all 10 main probes, 3 built-in clients
-node dist/cli.js scan --client all
-
-# In a network-isolated environment only: both suites, nonzero exit on REACHED
-node dist/cli.js scan --client guarded --suite all --fail-on-reach
-```
-
-`--fail-on-reach` exits 1 for an observed `REACHED`. It does not require every
-other result to be `BLOCKED` and is not a security certification.
-
-For the full tests and redirect scans, CI uses a fresh Linux network namespace
-with only loopback enabled. This prevents deliberately unsafe clients from
-contacting real metadata services or other networks. See
-[release verification](docs/RELEASE_VERIFICATION.md) and the
-[workflow](.github/workflows/ci.yml) for the exact commands and saved logs.
-The clone-based instructions do not assume this package is published on npm.
+These are tests prepared and run for ssrf-lab, not evidence of maintainer
+adoption or endorsements. The [guarded-fetch PR](https://github.com/vercel-labs/guarded-fetch/pull/12),
+the [linkpeek trial discussion](https://github.com/thegruber/linkpeek/discussions/39#discussioncomment-19046880)
+and the Linkwarden [test-coverage proposal](https://github.com/linkwarden/linkwarden/issues/1869)
+await maintainer feedback; the Linkwarden coverage is limited to the shared fetch
+function. DNS rebinding and TLS are outside these trials. linkpeek's separate
+development-dependency audit failure is recorded with its evidence.
 
 ## Additional pinned integrations
 
@@ -174,76 +165,11 @@ includes a reproduced redirect-conformance bug and a
 [upstream PR #4](https://github.com/dfpc-coe/node-safeurl/pull/4) and awaiting
 maintainer review.
 
-## Measured output
-
-The transcript below is a **historical run**, retained for explanation, not a
-fresh result for each commit. The updated CI records the actual environment,
-tests, compiled CLI results, and a failing-client negative control as downloadable
-artifacts. Use those per-commit artifacts when reporting release results.
-
-Network failures and deadlines vary by environment. For example, an isolated
-rebinding probe can produce `PREVENTED` instead of the historical deadline
-`BLOCKED`. The old transcript also calls TEST-NET-2 a "private range"; the current
-probe labels it correctly as reserved documentation space.
-
-```
-[+] BLOCKED    the client refused, and named the control that refused
-[=] PREVENTED  the attack never arrived, but the client named no control
-[!] REACHED    the client arrived, or never stopped reading
-[~] LUCKY      nothing refused it; something else failed first
-[-] N/A        the client has no hook this probe can use
-
-node-fetch (global, defaults)
------------------------------
-  [!] REACHED    Redirect into loopback                        status 200, 31 bytes
-  [!] REACHED    Redirect into loopback, written as a decimal  status 200, 31 bytes
-  [=] PREVENTED  Redirect that carries credentials             cross origin not allowed for request mode "cors"
-  [~] LUCKY      Redirect into cloud metadata                  no policy; the request failed
-  [~] LUCKY      Redirect into a private range                 no policy; the request failed
-  [+] BLOCKED    Endless redirect chain                        the client's own limit: redirect count exceeded
-  [!] REACHED    Decompression bomb                            status 200, 67108864 bytes
-  [!] REACHED    Body with no end and no length                status 200, 34942947 bytes; the harness had to stop the read
-  [!] REACHED    One byte per second                           status 200, 3 bytes; the harness had to stop the read
-  [-] N/A        DNS rebinding (simulated)                     the client exposes no hook on the address it connects to
-
-  1 blocked · 1 prevented · 5 reached · 2 lucky · 1 not applicable
-
-check-then-connect (naive guard)
---------------------------------
-  [+] BLOCKED    Redirect into loopback                        forbidden-address: 127.0.0.1 (loopback)
-  [+] BLOCKED    Redirect into loopback, written as a decimal  forbidden-address: 127.0.0.1 (loopback)
-  [+] BLOCKED    Redirect that carries credentials             forbidden-address: 127.0.0.1 (loopback)
-  [+] BLOCKED    Redirect into cloud metadata                  forbidden-address: 169.254.169.254 (link-local)
-  [+] BLOCKED    Redirect into a private range                 forbidden-address: 198.51.100.1 (private)
-  [+] BLOCKED    Endless redirect chain                        too-many-redirects: more than 3 hops
-  [+] BLOCKED    Decompression bomb                            body-too-large: stopped after 1064960 bytes, cap is 1048576
-  [+] BLOCKED    Body with no end and no length                body-too-large: stopped after 1048914 bytes, cap is 1048576
-  [+] BLOCKED    One byte per second                           deadline: 4000 ms elapsed
-  [!] REACHED    DNS rebinding (simulated)                     status 200, 31 bytes
-
-  9 blocked · 0 prevented · 1 reached · 0 lucky · 0 not applicable
-
-guarded client (this repo)
---------------------------
-  [+] BLOCKED    Redirect into loopback                        forbidden-address: 127.0.0.1 is loopback
-  [+] BLOCKED    Redirect into loopback, written as a decimal  forbidden-address: 127.0.0.1 is loopback
-  [+] BLOCKED    Redirect that carries credentials             forbidden-address: 127.0.0.1 is loopback
-  [+] BLOCKED    Redirect into cloud metadata                  forbidden-address: 169.254.169.254 is link-local
-  [+] BLOCKED    Redirect into a private range                 forbidden-address: 198.51.100.1 is private
-  [+] BLOCKED    Endless redirect chain                        too-many-redirects: more than 3 hops
-  [+] BLOCKED    Decompression bomb                            body-too-large: stopped after 1064960 bytes, cap is 1048576
-  [+] BLOCKED    Body with no end and no length                body-too-large: stopped after 1048914 bytes, cap is 1048576
-  [+] BLOCKED    One byte per second                           deadline: 4000 ms elapsed
-  [+] BLOCKED    DNS rebinding (simulated)                     deadline: 3000 ms elapsed
-
-  10 blocked · 0 prevented · 0 reached · 0 lucky · 0 not applicable
-```
-
 ## Findings
 
 The direct suite sends a request to a loopback service using 7 address forms,
 through npm packages whose stated purpose is to stop SSRF. These are the
-published finding's measured results, with exact versions:
+published finding's measured results on macOS, with exact versions:
 
 | Package | Version | Result |
 | --- | --- | --- |
@@ -251,9 +177,19 @@ published finding's measured results, with exact versions:
 | [ssrf-req-filter](https://www.npmjs.com/package/ssrf-req-filter) | 1.1.1 | 7 of 7 blocked |
 | [ssrf-agent](https://www.npmjs.com/package/ssrf-agent) | 1.0.5 | **5 of 7.** `0.0.0.0` and `[::ffff:127.0.0.1]` reached the internal service |
 
+On a Linux host without IPv6, the mapped case fails with `EAFNOSUPPORT` and
+reports `PREVENTED` instead; `0.0.0.0` still reaches the internal service.
+
 ```bash
 node dist/cli.js scan --client libs --suite direct
 ```
+
+[![Static screenshot of the recorded Node 22 results: the internal service counted 0, 0, and 2 hits for the three pinned packages.](docs/media/ssrf-lab-results.png)](docs/evidence/2026-10-12-7f8f15f/README.md)
+
+Actual output from isolated CI at [`7f8f15f`](https://github.com/roshan-amble/ssrf-lab/commit/7f8f15f4f3f068c40e3f3c2a0f69a02eff67f684).
+[Read the terminal output](docs/evidence/2026-10-12-7f8f15f/node22/demo.txt)
+· [Inspect the evidence and original recording](docs/evidence/2026-10-12-7f8f15f/README.md)
+· [Verify a release and inspect real CI output](docs/RELEASE_VERIFICATION.md)
 
 Details, root cause, suggested fix, and disclosure timeline:
 [docs/findings/2026-09-13-ssrf-agent-bypass.md](docs/findings/2026-09-13-ssrf-agent-bypass.md).
@@ -355,6 +291,69 @@ on purpose. The checker gives the internal hit counter priority over that claim.
 Finish or cancel the adapter's network work before settling `fetch`, and do not
 share a range between concurrent scans. The counter measures sequential probes;
 it is not a per-request correlation system.
+
+## Measured output
+
+A full `scan --client all` at [`d6156ea`](https://github.com/roshan-amble/ssrf-lab/commit/d6156ea),
+run on Linux with Node.js 22.22 in a network namespace with only loopback enabled.
+Network failures and deadlines vary by environment: here the rebinding probe
+reports `PREVENTED` because the namespace had no simulated public address. CI
+records each commit's environment, tests, compiled CLI results and a
+failing-client negative control as downloadable artifacts. Use those per-commit
+artifacts when reporting release results.
+
+```
+[+] BLOCKED    the client refused, and named the control that refused
+[=] PREVENTED  the attack never arrived, but the client named no control
+[!] REACHED    the client arrived, or never stopped reading
+[~] LUCKY      nothing refused it; something else failed first
+[-] N/A        the client has no hook this probe can use
+
+node-fetch (global, defaults)
+-----------------------------
+  [!] REACHED    Redirect into loopback                        the internal service recorded a request, independent of the returned body
+  [!] REACHED    Redirect into loopback, written as a decimal  the internal service recorded a request, independent of the returned body
+  [=] PREVENTED  Redirect that carries credentials             the internal service saw no request; the attempt failed with fetch failed <- cross origin not allowed for request mode "cors"
+  [~] LUCKY      Redirect into cloud metadata                  no policy; the request failed with fetch failed <- ENETUNREACH
+  [~] LUCKY      Redirect into TEST-NET-2 (reserved)           no policy; the request failed with fetch failed <- ENETUNREACH
+  [+] BLOCKED    Endless redirect chain                        the client's own limit: fetch failed <- redirect count exceeded
+  [!] REACHED    Decompression bomb                            status 200, 67108864 bytes
+  [!] REACHED    Body with no end and no length                status 200, 38614251 bytes; the harness had to stop the read
+  [!] REACHED    One byte per second                           status 200, 3 bytes; the harness had to stop the read
+  [-] N/A        DNS rebinding (simulated)                     the client exposes no hook on the address it connects to
+
+  1 blocked · 1 prevented · 5 reached · 2 lucky · 1 not applicable
+
+check-then-connect (naive guard)
+--------------------------------
+  [+] BLOCKED    Redirect into loopback                        forbidden-address: 127.0.0.1 resolved to 127.0.0.1 (loopback)
+  [+] BLOCKED    Redirect into loopback, written as a decimal  forbidden-address: 127.0.0.1 resolved to 127.0.0.1 (loopback)
+  [+] BLOCKED    Redirect that carries credentials             forbidden-address: 127.0.0.1 resolved to 127.0.0.1 (loopback)
+  [+] BLOCKED    Redirect into cloud metadata                  forbidden-address: 169.254.169.254 resolved to 169.254.169.254 (link-local)
+  [+] BLOCKED    Redirect into TEST-NET-2 (reserved)           forbidden-address: 198.51.100.1 resolved to 198.51.100.1 (private)
+  [+] BLOCKED    Endless redirect chain                        too-many-redirects: more than 3 hops
+  [+] BLOCKED    Decompression bomb                            body-too-large: stopped after 1064960 bytes, cap is 1048576
+  [+] BLOCKED    Body with no end and no length                body-too-large: stopped after 1048914 bytes, cap is 1048576
+  [+] BLOCKED    One byte per second                           deadline: 4000 ms elapsed
+  [!] REACHED    DNS rebinding (simulated)                     the internal service recorded a request, independent of the returned body
+
+  9 blocked · 0 prevented · 1 reached · 0 lucky · 0 not applicable
+
+guarded client (this repo)
+--------------------------
+  [+] BLOCKED    Redirect into loopback                        forbidden-address: 127.0.0.1 is loopback
+  [+] BLOCKED    Redirect into loopback, written as a decimal  forbidden-address: 127.0.0.1 is loopback
+  [+] BLOCKED    Redirect that carries credentials             forbidden-address: 127.0.0.1 is loopback
+  [+] BLOCKED    Redirect into cloud metadata                  forbidden-address: 169.254.169.254 is link-local
+  [+] BLOCKED    Redirect into TEST-NET-2 (reserved)           forbidden-address: 198.51.100.1 is private
+  [+] BLOCKED    Endless redirect chain                        too-many-redirects: more than 3 hops
+  [+] BLOCKED    Decompression bomb                            body-too-large: stopped after 1064960 bytes, cap is 1048576
+  [+] BLOCKED    Body with no end and no length                body-too-large: stopped after 1048914 bytes, cap is 1048576
+  [+] BLOCKED    One byte per second                           deadline: 4000 ms elapsed
+  [=] PREVENTED  DNS rebinding (simulated)                     the internal service saw no request; the attempt failed with ENETUNREACH
+
+  9 blocked · 1 prevented · 0 reached · 0 lucky · 0 not applicable
+```
 
 ## What this does NOT prove
 

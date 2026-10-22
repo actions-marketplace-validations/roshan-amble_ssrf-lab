@@ -2,6 +2,11 @@
 import { checkThenConnect } from './adapters/checkThenConnect.js'
 import { guardedFetch } from './adapters/guardedFetch.js'
 import { requestFilteringAgent, ssrfAgentClient, ssrfReqFilter } from './adapters/libraries.js'
+import {
+  MissingOptionalPackage,
+  missingOptionalPackages,
+  type OptionalPackage,
+} from './adapters/optional.js'
 import { plainFetch } from './adapters/plainFetch.js'
 import { vercelGuardedFetch } from './adapters/vercelGuardedFetch.js'
 import type { HttpClient } from './adapters/types.js'
@@ -18,6 +23,14 @@ const CLIENTS: Record<string, HttpClient> = {
   'ssrf-req-filter': ssrfReqFilter,
   'ssrf-agent': ssrfAgentClient,
   'vercel-guarded': vercelGuardedFetch,
+}
+
+/** Clients that compare a package ssrf-lab does not install. */
+const REQUIRES: Record<string, readonly OptionalPackage[]> = {
+  rfa: ['request-filtering-agent'],
+  'ssrf-req-filter': ['ssrf-req-filter'],
+  'ssrf-agent': ['ssrf-agent'],
+  'vercel-guarded': ['guarded-fetch'],
 }
 
 const GROUPS: Record<string, readonly string[]> = {
@@ -38,6 +51,9 @@ const USAGE = `ssrf-lab — run a local attack range against an HTTP client
 
   --client         all (the 3 built-in clients), libs (the npm SSRF packages),
                    or one of: ${Object.keys(CLIENTS).join(', ')}
+                   libs, rfa, ssrf-req-filter, ssrf-agent and vercel-guarded
+                   need the compared package installed beside ssrf-lab; the
+                   scan prints the install command when one is missing
   --suite          redirect: attacks that start on the public range (default)
                    direct:   one request at the internal service, in every
                              spelling a URL parser accepts
@@ -71,6 +87,13 @@ async function main(): Promise<void> {
 
   if (selected.some((client) => client === undefined)) {
     process.stderr.write(`unknown client: ${which}\n${USAGE}`)
+    process.exitCode = 2
+    return
+  }
+
+  const missing = await missingOptionalPackages(names.flatMap((name) => REQUIRES[name] ?? []))
+  if (missing.length > 0) {
+    process.stderr.write(`${new MissingOptionalPackage(missing).message}\n`)
     process.exitCode = 2
     return
   }

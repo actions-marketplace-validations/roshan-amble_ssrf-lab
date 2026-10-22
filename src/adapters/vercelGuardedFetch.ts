@@ -1,10 +1,6 @@
-import {
-  createGuardedDispatcher,
-  guardedFetch as upstreamFetch,
-  GuardedFetchError,
-  readBodyAsText,
-} from 'guarded-fetch'
+import type { GuardedFetchError } from 'guarded-fetch'
 import { redact } from './internal.js'
+import { loadOptional } from './optional.js'
 import { PolicyRefusal, type HttpClient, type RefusalReason } from './types.js'
 
 const REFUSALS: Partial<Record<GuardedFetchError['code'], RefusalReason>> = {
@@ -17,13 +13,23 @@ const REFUSALS: Partial<Record<GuardedFetchError['code'], RefusalReason>> = {
   timeout: 'deadline',
 }
 
-/** Use the package's real dispatcher and exported bounded body reader. */
+/**
+ * Use the package's real dispatcher and exported bounded body reader.
+ *
+ * The package is loaded on the first request, so ssrf-lab runs without it.
+ */
 export const vercelGuardedFetch: HttpClient = {
   name: 'guarded-fetch 0.1.5 (guardedFetch + readBodyAsText)',
   // The package has its own guarded lookup, but no injectable base resolver.
   supportsConnectHook: false,
   supportsLoopbackOrigin: false,
   async fetch(url, options = {}) {
+    const {
+      createGuardedDispatcher,
+      guardedFetch: upstreamFetch,
+      GuardedFetchError: UpstreamError,
+      readBodyAsText,
+    } = await loadOptional('guarded-fetch', () => import('guarded-fetch'))
     const timeoutMs = options.timeoutMs ?? 5000
     const deadlineAt = Date.now() + timeoutMs
     const dispatcher = createGuardedDispatcher()
@@ -51,7 +57,7 @@ export const vercelGuardedFetch: HttpClient = {
         stoppedByHarness: false,
       }
     } catch (error) {
-      if (error instanceof GuardedFetchError) {
+      if (error instanceof UpstreamError) {
         const reason = REFUSALS[error.code]
         if (reason !== undefined) throw new PolicyRefusal(reason, `guarded-fetch: ${error.code}`)
       }
