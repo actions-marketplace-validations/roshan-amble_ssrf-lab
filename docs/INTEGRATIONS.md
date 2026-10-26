@@ -35,6 +35,12 @@ uses these APIs. No upstream source is vendored or patched.
 
 ## Configuration
 
+The current comparison lockfiles use patched Undici transports. In particular,
+guarded-fetch 0.1.5 runs with an explicit Undici 7.30.1 override rather than its
+original 7.30.0 pin. See the [dependency policy](DEPENDENCY_POLICY.md#patched-comparison-transports)
+for the exact versions and advisory review. Historical evidence below retains
+its original dependency configuration.
+
 The [additional package group](../integrations/community/README.md) is installed
 separately and has its own scope notes and audit. Its node-safeurl functional
 redirect regression and patch are separate from the unmodified SSRF comparison.

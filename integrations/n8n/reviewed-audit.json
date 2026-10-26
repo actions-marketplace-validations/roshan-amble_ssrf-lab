@@ -1,23 +1,40 @@
 {
-  "reason": "Exact research dependencies of n8n 2.43.5. Keep these versions reproducible; no production safety claim. Reviewed only for isolated local HTTP fixture testing. Existing advisories are not ssrf-lab discoveries.",
+  "reason": "Pinned n8n 2.43.5 research components, with the documented compatible Undici transport patch. No production safety claim. Reviewed only for isolated local HTTP fixtures with static, bounded input. The Zod 3.25.76 collection-validation advisory is tracked explicitly; the listed fix is Zod 4.6.6, outside the components' exact 3.25.76 dependency pin. Existing advisories are not ssrf-lab discoveries.",
   "versions": {
+    "node_modules/@asteasolutions/zod-to-openapi": "7.3.4",
     "node_modules/@n8n/api-types": "1.43.3",
     "node_modules/@n8n/backend-common": "1.43.3",
     "node_modules/@n8n/backend-network": "1.17.3",
+    "node_modules/@n8n/config": "2.41.2",
     "node_modules/@n8n/decorators": "1.43.3",
+    "node_modules/@n8n/expression-runtime": "0.34.2",
+    "node_modules/@n8n/permissions": "0.80.0",
     "node_modules/axios": "1.18.0",
     "node_modules/n8n-workflow": "2.43.3",
     "node_modules/qs": "6.15.2",
-    "node_modules/stream-json": "1.9.1"
+    "node_modules/stream-json": "1.9.1",
+    "node_modules/zod": "3.25.76"
   },
   "findings": {
+    "@asteasolutions/zod-to-openapi": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@asteasolutions/zod-to-openapi"
+      ],
+      "via": [
+        "zod"
+      ]
+    },
     "@n8n/api-types": {
       "severity": "high",
       "nodes": [
         "node_modules/@n8n/api-types"
       ],
       "via": [
-        "n8n-workflow"
+        "@asteasolutions/zod-to-openapi",
+        "@n8n/permissions",
+        "n8n-workflow",
+        "zod"
       ]
     },
     "@n8n/backend-common": {
@@ -26,6 +43,7 @@
         "node_modules/@n8n/backend-common"
       ],
       "via": [
+        "@n8n/config",
         "@n8n/decorators",
         "n8n-workflow",
         "stream-json"
@@ -38,9 +56,20 @@
       ],
       "via": [
         "@n8n/backend-common",
+        "@n8n/config",
         "axios",
         "n8n-workflow",
-        "qs"
+        "qs",
+        "zod"
+      ]
+    },
+    "@n8n/config": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@n8n/config"
+      ],
+      "via": [
+        "zod"
       ]
     },
     "@n8n/decorators": {
@@ -50,7 +79,26 @@
       ],
       "via": [
         "@n8n/api-types",
+        "@n8n/permissions",
         "n8n-workflow"
+      ]
+    },
+    "@n8n/expression-runtime": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@n8n/expression-runtime"
+      ],
+      "via": [
+        "zod"
+      ]
+    },
+    "@n8n/permissions": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/@n8n/permissions"
+      ],
+      "via": [
+        "zod"
       ]
     },
     "axios": {
@@ -79,7 +127,9 @@
         "node_modules/n8n-workflow"
       ],
       "via": [
-        "axios"
+        "@n8n/expression-runtime",
+        "axios",
+        "zod"
       ]
     },
     "qs": {
@@ -101,6 +151,15 @@
         "https://github.com/advisories/GHSA-528h-pc64-c93x|<=3.4.0|moderate",
         "https://github.com/advisories/GHSA-hqr4-qq8f-hg3x|<=3.5.0|moderate",
         "https://github.com/advisories/GHSA-mjw6-4jj6-33hc|<3.6.0|moderate"
+      ]
+    },
+    "zod": {
+      "severity": "high",
+      "nodes": [
+        "node_modules/zod"
+      ],
+      "via": [
+        "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5|<4.6.6|high"
       ]
     }
   }

@@ -26,6 +26,23 @@ The dependency-upgrade verification compared each of these packages' versions,
 resolved tarball URLs, and integrity hashes against the original lockfile.
 No research dependency was silently replaced to obtain a green audit.
 
+## Patched comparison transports
+
+The current lockfiles use Undici 7.30.1 for guarded-fetch, n8n, and ssrf-fetch,
+and 8.12.3 for node-safeurl. These versions address
+[GHSA-4qv8-2p9j-2685](https://github.com/advisories/GHSA-4qv8-2p9j-2685),
+[GHSA-f72v-6w45-q472](https://github.com/advisories/GHSA-f72v-6w45-q472), and
+[GHSA-xjj6-f33q-929c](https://github.com/advisories/GHSA-xjj6-f33q-929c).
+guarded-fetch 0.1.5 pins Undici 7.30.0, so the root manifest explicitly overrides
+only that package's Undici dependency. The other updates satisfy upstream's
+declared version ranges. The comparison packages' own versions are unchanged.
+
+These are the current comparison configurations. Historical evidence retains
+its original lockfiles and results; it does not describe these patched installs.
+The audit gates are unchanged; no Undici advisory is excepted.
+The published ssrf-lab CLI has no runtime dependencies and does not install
+these optional comparison packages.
+
 ## Two package findings, one documented exception
 
 At upgrade verification, `npm audit` reported two high-severity package entries:
@@ -57,10 +74,24 @@ just because it is part of a security lab.
 The optional n8n integration has its own lockfile and audit gate under
 `integrations/n8n/`. It pins `@n8n/backend-network@1.17.3` and
 `@n8n/config@2.41.2`, matching the components in n8n 2.43.5. Its reviewed audit
-snapshot contains eight vulnerable package entries: `@n8n/api-types`,
-`@n8n/backend-common`, `@n8n/backend-network`, `@n8n/decorators`, `axios`,
-`n8n-workflow`, `qs`, and `stream-json`. These include transitive impact entries,
-not eight new discoveries.
+snapshot contains thirteen vulnerable package entries, including transitive
+impact entries rather than thirteen independent discoveries. The original eight
+entries were `@n8n/api-types`, `@n8n/backend-common`, `@n8n/backend-network`,
+`@n8n/decorators`, `axios`, `n8n-workflow`, `qs`, and `stream-json`.
+
+The additional review covers Zod 3.25.76 and the exact dependency impact through
+`@asteasolutions/zod-to-openapi`, `@n8n/config`, `@n8n/expression-runtime`, and
+`@n8n/permissions`.
+[GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)
+describes memory exhaustion during oversized collection validation and lists
+Zod 4.6.6 as the fix. These n8n components pin Zod 3.25.76; forcing Zod 4 would
+replace their declared dependency with a different major version. The fixture
+exercises outbound HTTP against small, static local responses and does not
+accept external schema-validation inputs. This is an isolation-based research
+exception, not a claim that the pinned Zod version is fixed or production-safe.
+The review pins the additional package versions, install paths, advisory URL,
+affected range, severity, and propagated dependency edges. New findings still
+fail the gate.
 
 `integrations/n8n/reviewed-audit.json` records exact advisory URLs, affected
 ranges, severities, install paths, and pinned versions. The separate gate
