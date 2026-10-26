@@ -13,6 +13,22 @@ The starter covers **seven direct-address cases and two redirects**. It does
 not test DNS rebinding or TLS, and a passing result is not a complete security
 assessment.
 
+## Try it in one command
+
+With Node.js 22.12 or later:
+
+```bash
+npx ssrf-lab@0.1.0 scan --client all --suite direct
+```
+
+This sends seven local address cases through three built-in clients: native
+fetch, a check-then-connect client and the lab's guarded client. The output
+shows which requests reached the internal fixture and which clients explicitly
+refused them. You do not need an API key or a repository checkout.
+
+To test your application's fetcher, connect it using the adapter and CI steps
+below. The one-command scan is a demonstration of the harness.
+
 ## What the check measures
 
 The fixture has an entry service and a separate internal service. The internal
@@ -37,13 +53,14 @@ Use Node.js 22.19 or newer. From a disposable development environment:
 ```bash
 git clone https://github.com/roshan-amble/ssrf-lab.git
 cd ssrf-lab
-git checkout ac0d4906592a5c41c27785b7a4327d449bc10da9
+git checkout 7b601dddbe6d27a290fbf5e387fd694b12b5483d
 npm ci --ignore-scripts
 npm run build
 node examples/custom-fetcher/check.mjs
 ```
 
-The included application module calls pinned `guarded-fetch@0.1.5`. This local
+The included application module calls pinned `guarded-fetch@0.1.5`, with the
+checkout's Undici 7.30.1 override. This local
 smoke test covers the seven direct-address cases. Expect explicit refusals,
 zero internal hits from the tested client, and exit `0`. Local address behavior
 can vary by operating system; the isolated CI run below is the reproducible
