@@ -3,7 +3,16 @@
 This finding was reproduced with [ssrf-lab](../../README.md), an MIT-licensed
 local testing harness for SSRF defenses in Node.js HTTP clients. It checks whether
 the internal service received a request, even if the client throws afterward.
-[Run the local comparison](#reproduce) to reproduce this finding.
+**Try the pinned comparison (Node.js 22.12+):**
+
+```bash
+npx --package=ssrf-lab@0.1.0 --package=ssrf-agent@1.0.5 \
+  ssrf-lab scan --client ssrf-agent --suite direct
+```
+
+This runs `ssrf-agent@1.0.5` against the lab's local fixture. Address behavior
+can vary by operating system. The [clone-and-build instructions](#reproduce)
+are below.
 
 **Test your application's fetcher:** start with the
 [runnable custom-fetcher example](../../examples/custom-fetcher/README.md),
