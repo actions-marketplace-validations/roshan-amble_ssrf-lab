@@ -1,5 +1,5 @@
 {
-  "reason": "Pinned n8n 2.43.5 research components, with the documented compatible Undici transport patch. No production safety claim. Reviewed only for isolated local HTTP fixtures with static, bounded input. The Zod 3.25.76 collection-validation advisory is tracked explicitly; the listed fix is Zod 4.6.6, outside the components' exact 3.25.76 dependency pin. Existing advisories are not ssrf-lab discoveries.",
+  "reason": "Pinned n8n 2.43.5 research components, with the documented Undici transport patch and explicit qs 6.16.1 override. No production safety claim. Reviewed only for isolated local HTTP fixtures with static, bounded input. The Zod 3.25.76 collection-validation advisory is tracked explicitly; the listed fix is Zod 4.6.6, outside the components' exact 3.25.76 dependency pin. Existing advisories are not ssrf-lab discoveries.",
   "versions": {
     "node_modules/@asteasolutions/zod-to-openapi": "7.3.4",
     "node_modules/@n8n/api-types": "1.43.3",
@@ -11,7 +11,7 @@
     "node_modules/@n8n/permissions": "0.80.0",
     "node_modules/axios": "1.18.0",
     "node_modules/n8n-workflow": "2.43.3",
-    "node_modules/qs": "6.15.2",
+    "node_modules/qs": "6.16.1",
     "node_modules/stream-json": "1.9.1",
     "node_modules/zod": "3.25.76"
   },
@@ -59,7 +59,6 @@
         "@n8n/config",
         "axios",
         "n8n-workflow",
-        "qs",
         "zod"
       ]
     },
@@ -130,16 +129,6 @@
         "@n8n/expression-runtime",
         "axios",
         "zod"
-      ]
-    },
-    "qs": {
-      "severity": "moderate",
-      "nodes": [
-        "node_modules/qs"
-      ],
-      "via": [
-        "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g|>=2.2.5 <6.16.0|moderate",
-        "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx|>=6.14.2 <=6.15.3|moderate"
       ]
     },
     "stream-json": {
