@@ -56,7 +56,15 @@ Scope and classification:
 
 `check-redirects.mjs` is an additional functional comparison for node-safeurl's
 method rewrites. It uses one explicitly allowed loopback origin and compares
-the original package against native fetch. The
+the original package against native fetch across eight cases. Five single-hop
+cases are joined by 302→307 and 307→302 rewrite chains and a 307→308
+method/body-preserving control. The report records the method, body, body
+headers and a harmless marker at every actual hop, rather than checking only
+the final response. It asserts the native reference and the pinned package's
+known baseline. A successful run does not mean the published package conforms:
+`matchesReference: false` identifies the five cases that still retain stale body
+headers, alongside three method-preserving controls. This is same-origin HTTP
+coverage; it makes no claim about credentials, TLS or SSRF policy. The
 [fix and regression tests](../../patches/node-safeurl/README.md), submitted as
 [upstream PR #4](https://github.com/dfpc-coe/node-safeurl/pull/4), address stale
 body headers after redirects. The patch is tested against upstream source
