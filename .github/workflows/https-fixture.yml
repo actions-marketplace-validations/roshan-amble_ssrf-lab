@@ -1,0 +1,54 @@
+name: HTTPS fixture prototype
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  https:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - name: Install and compile
+        run: |
+          npm ci --ignore-scripts
+          npm run typecheck
+          npm run build
+          node --check examples/https-fixture/fixture.mjs
+          node --check examples/https-fixture/verify.mjs
+          mkdir -p verification
+          { git rev-parse HEAD; node --version; openssl version; } > verification/https-environment.txt
+      - name: Verify HTTPS with no external network
+        shell: bash
+        run: |
+          sudo env "PATH=$PATH" unshare --net -- bash -euo pipefail -c '
+            ip link set lo up
+            ip address add 93.184.216.34/32 dev lo
+            ip -j address show > verification/https-network.json
+            ip -j route show table all > verification/https-routes.json
+            node examples/https-fixture/verify.mjs > verification/https-fixture.json
+          '
+          cat verification/https-fixture.json
+      - name: Preserve measured HTTPS results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: https-fixture-node${{ matrix.node }}-${{ github.sha }}
+          path: verification/https-*
+          if-no-files-found: error
+          retention-days: 30
