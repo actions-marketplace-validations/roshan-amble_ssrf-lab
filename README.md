@@ -38,6 +38,10 @@ Excerpt from the [full run](#measured-output).
 | Catch regressions in CI | The [reusable GitHub Action](action/README.md) · [step-by-step tutorial](docs/tutorials/node-fetcher-github-actions.md) · [48-second recording](docs/media/ssrf-lab-walkthrough.mp4) ([raw recording and reports](docs/evidence/2026-10-16-action/README.md)) |
 | Run it locally | The [quick start](#quick-start) below |
 
+For HTTPS test development, the [isolated fixture prototype](examples/https-fixture/README.md)
+checks real TLS, independent destination counters and certificate-error controls
+against the lab's reference client. Application adapters are a separate step.
+
 ## What it found
 
 - **`ssrf-agent` 1.0.5**, the latest release of a package whose stated purpose is

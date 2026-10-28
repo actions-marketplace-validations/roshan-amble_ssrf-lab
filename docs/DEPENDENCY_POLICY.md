@@ -43,6 +43,18 @@ The audit gates are unchanged; no Undici advisory is excepted.
 The published ssrf-lab CLI has no runtime dependencies and does not install
 these optional comparison packages.
 
+## Patched n8n query serializer
+
+The current n8n fixture overrides only `@n8n/backend-network@1.17.3`'s exact
+`qs@6.15.2` dependency with `qs@6.16.1`. This fixes
+[GHSA-6pq8-jhm2-2vcw](https://github.com/advisories/GHSA-6pq8-jhm2-2vcw),
+which can make comma-format serialization throw for certain object elements.
+The override is explicit because the upstream dependency is an exact pin;
+the n8n component versions and audit gate remain unchanged. No new advisory
+is excepted. The old `qs` exception and its propagated dependency edge are
+removed from the review snapshot, while the repaired version remains pinned.
+Historical evidence retains its original dependency configuration.
+
 ## Two package findings, one documented exception
 
 At upgrade verification, `npm audit` reported two high-severity package entries:
@@ -74,8 +86,8 @@ just because it is part of a security lab.
 The optional n8n integration has its own lockfile and audit gate under
 `integrations/n8n/`. It pins `@n8n/backend-network@1.17.3` and
 `@n8n/config@2.41.2`, matching the components in n8n 2.43.5. Its reviewed audit
-snapshot contains thirteen vulnerable package entries, including transitive
-impact entries rather than thirteen independent discoveries. The original eight
+snapshot contains twelve vulnerable package entries after the qs repair, including
+transitive impact entries rather than twelve independent discoveries. The original eight
 entries were `@n8n/api-types`, `@n8n/backend-common`, `@n8n/backend-network`,
 `@n8n/decorators`, `axios`, `n8n-workflow`, `qs`, and `stream-json`.
 

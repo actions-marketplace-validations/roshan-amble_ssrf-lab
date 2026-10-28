@@ -6,5 +6,10 @@
   "dependencies": {
     "@n8n/backend-network": "1.17.3",
     "@n8n/config": "2.41.2"
+  },
+  "overrides": {
+    "@n8n/backend-network@1.17.3": {
+      "qs": "6.16.1"
+    }
   }
 }

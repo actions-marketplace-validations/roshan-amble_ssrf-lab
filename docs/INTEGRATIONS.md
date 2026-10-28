@@ -41,6 +41,11 @@ original 7.30.0 pin. See the [dependency policy](DEPENDENCY_POLICY.md#patched-co
 for the exact versions and advisory review. Historical evidence below retains
 its original dependency configuration.
 
+The n8n fixture also explicitly overrides backend-network's pinned `qs@6.15.2`
+with `qs@6.16.1` to address GHSA-6pq8-jhm2-2vcw. See the
+[query-serializer review](DEPENDENCY_POLICY.md#patched-n8n-query-serializer).
+This is a patched comparison configuration, not an untouched transitive install.
+
 The [additional package group](../integrations/community/README.md) is installed
 separately and has its own scope notes and audit. Its node-safeurl functional
 redirect regression and patch are separate from the unmodified SSRF comparison.

@@ -5,14 +5,14 @@ import { validateIntegrationAudit } from './check-audit.mjs'
 
 const reviewed = JSON.parse(readFileSync(new URL('./reviewed-audit.json', import.meta.url)))
 const lock = JSON.parse(readFileSync(new URL('./package-lock.json', import.meta.url)))
-const finding = { name: 'qs', severity: reviewed.findings.qs.severity, nodes: reviewed.findings.qs.nodes, via: [] }
-const report = { metadata: { vulnerabilities: { total: 1 } }, vulnerabilities: { qs: finding } }
+const finding = { name: 'zod', severity: reviewed.findings.zod.severity, nodes: reviewed.findings.zod.nodes, via: [] }
+const report = { metadata: { vulnerabilities: { total: 1 } }, vulnerabilities: { zod: finding } }
 test('accepts removal of known advisories without expanding the exception', () => {
   assert.equal(validateIntegrationAudit(report, lock, reviewed), 1)
 })
 test('rejects an additional advisory on a reviewed package', () => {
   const changed = structuredClone(report)
-  changed.vulnerabilities.qs.via.push({ url: 'https://example.invalid/new', range: '*', severity: 'moderate' })
+  changed.vulnerabilities.zod.via.push({ url: 'https://example.invalid/new', range: '*', severity: 'high' })
   assert.throws(() => validateIntegrationAudit(changed, lock, reviewed), /Unreviewed advisory/)
 })
 test('rejects a changed dependency version', () => {
